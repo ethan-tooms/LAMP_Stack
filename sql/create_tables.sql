@@ -20,6 +20,7 @@ CREATE TABLE IF NOT EXISTS `Users` (
     `Login` VARCHAR(50) NOT NULL DEFAULT '',
     `Password` VARCHAR(50) NOT NULL DEFAULT '',
     `IsAdmin` BOOLEAN NOT NULL DEFAULT 0, 
+    `IsAuthorized` BOOLEAN NOT NULL DEFAULT 1, 
     `DateCreated` DATE NOT NULL DEFAULT (CURRENT_DATE),
     `DateUpdated` DATE NOT NULL DEFAULT (CURRENT_DATE), -- API must handle date updates
 
