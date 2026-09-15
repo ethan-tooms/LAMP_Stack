@@ -58,9 +58,9 @@ CREATE TABLE IF NOT EXISTS `Contacts` (
 
 
 -- Seed Sample Users
--- User 1: Valerie Lopez (Plaintext password for demonstration / testing)
-INSERT INTO `Users` (`FirstName`, `LastName`, `Login`, `Password`) 
-VALUES ('Valerie', 'Lopez', 'VLopez', 'COP4331');
+-- User 1: Nick Fury (Plaintext password for demonstration / testing)
+INSERT INTO `Users` (`FirstName`, `LastName`, `Login`, `Password`, `IsAdmin`, `IsAuthorized`) 
+VALUES ('Nick', 'Fury', 'UCF', 'COP4331', 1, 1);
 
 -- User 2: Peter Parker 
 INSERT INTO `Users` (`FirstName`, `LastName`, `Login`, `Password`) 
@@ -71,7 +71,7 @@ INSERT INTO `Users` (`FirstName`, `LastName`, `Login`, `Password`)
 VALUES ('Bruce', 'Wayne', 'Batman', 'COP4331');
 
 -- Seed Initial Contacts
--- User ID 1 (Valerie Lopez)
+-- User ID 1 (Nick Fury)
 INSERT INTO `Contacts` (`FirstName`, `LastName`, `Nickname`, `Phone`, `Email`, `Address`, `ProfilePic`, `UserID`) VALUES 
 ('Peter', 'Parker', 'Spiderman', '111-111-1111', 'parker@nyc.com','New York City, NY', NULL, 1),
 ('Bruce', 'Wayne', 'Batman', '222-222-2222', 'wayne@gotham.com', 'Gotham City, NJ', NULL, 1);
