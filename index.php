@@ -26,82 +26,192 @@ if ($method === 'GET' && (isset($_GET['ping']) || (isset($_GET['action']) && $_G
     respond(200, ['status' => 'OK', 'timestamp' => time()]);
 }
 
-// 2. Unauthenticated Login (POST with login & password in body)
+// 2. Unauthenticated Login (POST with login & password in body) and Registration (POST with login, password, firstName, lastName in body)
 if ($method === 'POST') {
-    if ($action === 'login'){
-        $body = getRequestBody();
-        if (!isset($body['login']) || !isset($body['password']))
-            respond(400, ['error' => 'Login and password are required']);
-        $login    = clean($body['login']);
-        $password = clean($body['password']);
 
-        if (!$login || !$password)
-            respond(400, ['error' => 'Login and password are required']);
+    switch($action){
 
-        $stmt = $db->prepare('
-            SELECT ID, FirstName, LastName 
-            FROM Users
-            WHERE Login = :login 
-            AND Password = :password 
-            LIMIT 1');
-        $stmt->execute([':login' => $login, ':password' => $password]);
-        $user = $stmt->fetch();
+        case 'login':
 
-        if (!$user) {
-            respond(401, [
-                'id'        => 0,
-                'firstName' => '',
-                'lastName'  => '',
-                'error'     => 'No Records Found'
+            $body = getRequestBody();
+            if (!isset($body['login']) || !isset($body['password']))
+                respond(400, ['error' => 'Login and password are required']);
+            $login    = clean($body['login']);
+            $password = clean($body['password']);
+
+            if (!$login || !$password)
+                respond(400, ['error' => 'Login and password are required']);
+
+            $stmt = $db->prepare('
+                SELECT ID, FirstName, LastName 
+                FROM Users
+                WHERE Login = :login 
+                AND Password = :password 
+                LIMIT 1');
+            $stmt->execute([':login' => $login, ':password' => $password]);
+            $user = $stmt->fetch();
+
+            if (!$user) {
+                respond(401, [
+                    'id'        => 0,
+                    'firstName' => '',
+                    'lastName'  => '',
+                    'error'     => 'No Records Found'
+                ]);
+            }
+            respond(200, [
+                'id'        => (int) $user['ID'],
+                'firstName' => $user['FirstName'],
+                'lastName'  => $user['LastName'],
+                'token'     => (string) $user['ID'],
+                'error'     => ''
             ]);
-        }
-        respond(200, [
-            'id'        => (int) $user['ID'],
-            'firstName' => $user['FirstName'],
-            'lastName'  => $user['LastName'],
-            'token'     => (string) $user['ID'],
-            'error'     => ''
-        ]);
+
+            break;
+
+        case 'register':
+        
+            $body = getRequestBody();
+
+            if (!isset($body['login']) || !isset($body['password']))
+                respond(400, ['error' => 'Login and password are required']);
+            if (!isset($body['firstName']) || !isset($body['lastName']))    
+                respond(400, ['error' => 'First and last names are required']);
+
+            $login    = clean($body['login']);
+            $password = clean($body['password']);
+            $firstName    = clean($body['firstName']);
+            $lastName    = clean($body['lastName']);
+
+            if (!$login || !$password || !$firstName || !$lastName)
+                respond(400, ['error' => 'All fields must be filled']);
+            $stmt = $db->prepare('
+                SELECT ID 
+                FROM Users
+                WHERE Login = :login
+                LIMIT 1');
+            $stmt->execute([':login' => $login]);
+            $user = $stmt->fetch();
+
+            if ($user) {
+                respond(409, ['error'     => 'User already registered. Please log in']);
+            }
+            $stmt = $db->prepare('
+                INSERT INTO Users (FirstName, LastName, Login, Password)
+                VALUES (:firstName, :lastName, :login, :password)
+            ');
+            $stmt->execute([':firstName' => $firstName, ':lastName' => $lastName, ':login' => $login, ':password' => $password]);
+            respond(201, [
+                'message' => 'User registered successfully',
+                'id'      => (int)$db->lastInsertId(),
+                'error'   => ''
+            ]);
+
+        break;
+
     }
-    elseif ($action === 'register'){
-        $body = getRequestBody();
-        if (!isset($body['login']) || !isset($body['password']))
-            respond(400, ['error' => 'Login and password are required']);
-        if (!isset($body['firstName']) || !isset($body['lastName']))    
-            respond(400, ['error' => 'First and last names are required']);
-
-        $login    = clean($body['login']);
-        $password = clean($body['password']);
-        $firstName    = clean($body['firstName']);
-        $lastName    = clean($body['lastName']);
-
-        if (!$login || !$password || !$firstName || !$lastName)
-            respond(400, ['error' => 'All fields must be filled']);
-        $stmt = $db->prepare('
-            SELECT ID 
-            FROM Users
-            WHERE Login = :login
-            LIMIT 1');
-        $stmt->execute([':login' => $login]);
-        $user = $stmt->fetch();
-
-        if ($user) {
-            respond(409, ['error'     => 'User already registered. Please log in']);
-        }
-        $stmt = $db->prepare('
-            INSERT INTO Users (FirstName, LastName, Login, Password)
-            VALUES (:firstName, :lastName, :login, :password)
-        ');
-        $stmt->execute([':firstName' => $firstName, ':lastName' => $lastName, ':login' => $login, ':password' => $password]);
-        respond(201, [
-            'message' => 'User registered successfully',
-            'id'      => (int)$db->lastInsertId(),
-            'error'   => ''
-        ]);
-    }
+    
 }
+
 // 3. All other routes require an authenticated user
 $userId = requireAuth();
+
+//switch method to determine which action to take (GET, POST, PUT, DELETE) THEN by "?action=???"
+switch ($method) {
+
+    case "GET":
+
+        switch($action){
+
+            //?action=getContactByID
+            case 'getContactByID':
+
+                $id = isset($_GET['id']) ? (int) $_GET['id'] : null;
+
+                // Single contact by ID
+                if($id){
+
+                    $stmt = $db->prepare("SELECT ID as id,
+                                          FirstName as firstName,
+                                          LastName as lastName,
+                                          Email as email,
+                                          Nickname as nickname,
+                                          Phone as phone,
+                                          Address as address,
+                                          ProfilePic as profilePic,
+                                          UserID as user_id
+                                          FROM Contacts
+                                          WHERE ID = :id AND UserID = :uid LIMIT 1");
+                    
+                    $stmt->execute([':id' => $id, ':uid' => $userId]);
+                    $contact = $stmt->fetch();
+
+                    if(!$contact){
+                        respond(404, ['error' => 'Contact not found']);
+                    }
+                    
+                    respond(200, $contact);
+
+                }
+
+                if(!$id){
+                    
+                    //when ?id=??? is not included, returns an error
+                    respond(400, ['error' => 'ID is required']);
+
+                }
+                
+                break;
+            
+            //?action=getContactsByName
+            case 'getContactsByName':
+
+                $search = isset($_GET['q'])  ? trim($_GET['q'])  : (isset($_GET['search']) ? trim($_GET['search']) : null);
+                
+                //partial search contacts by first name or last name or both. Otherwise, lists all contacts (TODO)
+                if ($search !== null && $search !== '') {
+
+                    $like = '%' . $search . '%';
+                    $stmt = $db->prepare("SELECT ID as id,
+                                          FirstName as firstName,
+                                          LastName as lastName,
+                                          Email as email,
+                                          Nickname as nickname,
+                                          Phone as phone,
+                                          Address as address,
+                                          ProfilePic as profilePic
+                                          FROM Contacts
+                                          WHERE CONCAT(FirstName, ' ', LastName) LIKE :q AND UserID = :uid
+                                          ORDER BY FirstName, LastName");
+                    $stmt->execute([':uid' => $userId, ':q' => $like]);
+                    $rows = $stmt->fetchAll();
+                    $results = [];
+                    foreach ($rows as $row) {
+                        $results[] = $row['firstName'] . ' ' . $row['lastName'];
+                    }
+                    
+                    if(empty($results)){
+                        respond(200, ['results' => [], 'contacts' => [], 'error' => 'No Records Found']);
+                    }
+                    
+                    respond(200, ['results' => $results, 'contacts' => $rows, 'error' => '']);
+
+                }
+
+                break;
+
+        }
+
+}
+
+/*
+ *
+ *  
+ *ANYTHING BELOW THIS LINE IS FROM THE ORIGINAL COLORS API, WHICH IS
+ *FOR REFERENCE ONLY. IT IS NOT PART OF THE NEW AUTHENTICATED API.
+ *  
+ *   
+ */
 
 switch ($method) {
 
@@ -120,7 +230,9 @@ switch ($method) {
             }
             respond(200, $color);
         }
-
+        /*SELECT ID as id, FirstName as firstName, LastName as lastName
+        FROM Users
+        WHERE CONCAT(FirstName, ' ', LastName) LIKE :search*/
         // Search colors (partial match)
         if ($search !== null && $search !== '') {
             $like = '%' . $search . '%';
