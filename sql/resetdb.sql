@@ -56,11 +56,15 @@ CREATE TABLE IF NOT EXISTS `Contacts` (
 
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- Seed Admin User 
+INSERT INTO `Users` (`FirstName`, `LastName`, `Login`, `Password`, `IsAdmin`, `IsAuthorized`) 
+VALUES ('root', 'root', 'AppAdmin', 'COP4331', 1, 1);
+
 
 -- Seed Sample Users
 -- User 1: Nick Fury (Plaintext password for demonstration / testing)
-INSERT INTO `Users` (`FirstName`, `LastName`, `Login`, `Password`, `IsAdmin`, `IsAuthorized`) 
-VALUES ('Nick', 'Fury', 'UCF', 'COP4331', 1, 1);
+INSERT INTO `Users` (`FirstName`, `LastName`, `Login`, `Password`) 
+VALUES ('Clark', 'Kent', 'Superman', 'COP4331');
 
 -- User 2: Peter Parker 
 INSERT INTO `Users` (`FirstName`, `LastName`, `Login`, `Password`) 
