@@ -8,7 +8,7 @@ USE `ContactsAppDB`;
 
 -- Seed Admin User
 -- User 1: Admin User 
-INSERT INTO `Users` (`FirstName`, `LastName`, `Login`, `Password`, `IsAdmin`, `IsAuthorized`) 
+INSERT INTO `Users` (`FirstName`, `LastName`, `Login`, `Password`, `IsAdmin`, `IsEnabled`) 
 VALUES ('root', 'root', 'AppAdmin', '$2y$12$L6hTE7YIh7L1nC/RO4SBL.KhuB.FaPXA181wx3WPqyZiPgw.EJt6O', 1, 1);
 
 -- Seed Sample Users
