@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS `Users` (
     `FirstName` VARCHAR(50) NOT NULL DEFAULT '',
     `LastName` VARCHAR(50) NOT NULL DEFAULT '',
     `Login` VARCHAR(50) NOT NULL DEFAULT '',
-    `Password` VARCHAR(50) NOT NULL DEFAULT '',
+    `Password` VARCHAR(255) NOT NULL DEFAULT '',
     `IsAdmin` BOOLEAN NOT NULL DEFAULT 0, 
     `IsAuthorized` BOOLEAN NOT NULL DEFAULT 1,
     `DateCreated` DATE NOT NULL DEFAULT (CURRENT_DATE),
@@ -59,20 +59,20 @@ CREATE TABLE IF NOT EXISTS `Contacts` (
 -- Seed Admin User
 -- User 1: Admin User 
 INSERT INTO `Users` (`FirstName`, `LastName`, `Login`, `Password`, `IsAdmin`, `IsAuthorized`) 
-VALUES ('root', 'root', 'AppAdmin', 'COP4331', 1, 1);
+VALUES ('root', 'root', 'AppAdmin', '$2y$12$L6hTE7YIh7L1nC/RO4SBL.KhuB.FaPXA181wx3WPqyZiPgw.EJt6O', 1, 1);
 
 -- Seed Sample Users
 -- User 2: Clark Kent (Plaintext password for demonstration / testing)
 INSERT INTO `Users` (`FirstName`, `LastName`, `Login`, `Password`) 
-VALUES ('Clark', 'Kent', 'Superman', 'COP4331');
+VALUES ('Clark', 'Kent', 'Superman', '$2y$12$njH3NtonUzBDeoXO0UIolu.cjvIautidFEFEUWmQELDKh8oE4YfV2');
 
 -- User 3: Peter Parker 
 INSERT INTO `Users` (`FirstName`, `LastName`, `Login`, `Password`) 
-VALUES ('Peter', 'Parker', 'Spiderman', 'COP4331');
+VALUES ('Peter', 'Parker', 'Spiderman', '$2y$12$hTytZYMhpCq418CZQlr40Ov6TFbJZWosj78Hvh8.yf/pRJmE/2tx2');
 
 -- User 4: Bruce Wayne
 INSERT INTO `Users` (`FirstName`, `LastName`, `Login`, `Password`) 
-VALUES ('Bruce', 'Wayne', 'Batman', 'COP4331');
+VALUES ('Bruce', 'Wayne', 'Batman', '$2y$12$ldKrt6EjdQr9C6TPqHUI6.hT0CBOZTsvjkYF2C8Ld4m3KJ/CvEJ66');
 
 -- Seed Initial Contacts
 -- User ID 2 (Clark Kent)
