@@ -6,27 +6,31 @@
 
 USE `ContactsAppDB`;
 
--- 1. Seed Sample Users
--- User 1: Valerie Lopez (Plaintext password for demonstration / testing)
-INSERT INTO `Users` (`FirstName`, `LastName`, `Login`, `Password`) 
-VALUES ('Valerie', 'Lopez', 'VLopez', 'COP4331');
+-- Seed Admin User
+-- User 1: Admin User 
+INSERT INTO `Users` (`FirstName`, `LastName`, `Login`, `Password`, `IsAdmin`, `IsAuthorized`) 
+VALUES ('root', 'root', 'AppAdmin', 'COP4331', 1, 1);
 
--- User 2: Peter Parker 
+-- Seed Sample Users
+-- User 2: Clark Kent (Plaintext password for demonstration / testing)
+INSERT INTO `Users` (`FirstName`, `LastName`, `Login`, `Password`) 
+VALUES ('Clark', 'Kent', 'Superman', 'COP4331');
+
+-- User 3: Peter Parker 
 INSERT INTO `Users` (`FirstName`, `LastName`, `Login`, `Password`) 
 VALUES ('Peter', 'Parker', 'Spiderman', 'COP4331');
 
--- User 3: Bruce Wayne
+-- User 4: Bruce Wayne
 INSERT INTO `Users` (`FirstName`, `LastName`, `Login`, `Password`) 
 VALUES ('Bruce', 'Wayne', 'Batman', 'COP4331');
 
-
--- 2. Seed Initial Contacts
--- User ID 1 (Valerie Lopez)
+-- Seed Initial Contacts
+-- User ID 2 (Clark Kent)
 INSERT INTO `Contacts` (`FirstName`, `LastName`, `Nickname`, `Phone`, `Email`, `Address`, `ProfilePic`, `UserID`) VALUES 
-('Peter', 'Parker', 'Spiderman', '111-111-1111', 'parker@nyc.com','New York City, NY', NULL, 1),
-('Bruce', 'Wayne', 'Batman', '222-222-2222', 'wayne@gotham.com', 'Gotham City, NJ', NULL, 1);
+('Peter', 'Parker', 'Spiderman', '111-111-1111', 'parker@nyc.com','New York City, NY', NULL, 2),
+('Bruce', 'Wayne', 'Batman', '222-222-2222', 'wayne@gotham.com', 'Gotham City, NJ', NULL, 2);
 
--- User ID 2 (Peter Parker)
+-- User ID 3 (Peter Parker)
 INSERT INTO `Contacts` (`FirstName`, `LastName`, `Nickname`, `Phone`, `Email`, `Address`, `ProfilePic`,`UserID`) VALUES 
-('Tony', 'Stark', 'Iron Man', '111-111-1111', 'stark@nyc.com', 'New York City, NY', NULL, 2),
-('Bruce', 'Banner', 'Hulk', '111-111-1111', 'banner@nyc.com', 'New York City, NY', NULL, 2);
+('Tony', 'Stark', 'Iron Man', '111-111-1111', 'stark@nyc.com', 'New York City, NY', NULL, 3),
+('Bruce', 'Banner', 'Hulk', '111-111-1111', 'banner@nyc.com', 'New York City, NY', NULL, 3);
