@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>Sign in · Contacts Manager</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%234f46e5'/%3E%3Ccircle cx='16' cy='12.5' r='4.5' fill='white'/%3E%3Cpath d='M7.5 25c.8-4.6 4.2-7 8.5-7s7.7 2.4 8.5 7z' fill='white'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="css/login.css">
+</head>
+<body>
+  <main class="shell">
+
+    <aside class="brand" aria-hidden="true">
+      <div class="logo">
+        <span class="logo-mark">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.6"/><path d="M4.5 20c.9-4 3.8-6 7.5-6s6.6 2 7.5 6"/></svg>
+        </span>
+        Contacts Manager
+      </div>
+
+      <div>
+        <h2>Find anyone,<br>the moment you need them.</h2>
+        <p>Search your contacts by name or email in one tidy place.</p>
+      </div>
+    </aside>
+
+    <section class="panel">
+      <h1>Welcome back</h1>
+      <p class="lede">Sign in to manage your contacts.</p>
+
+      <form id="loginForm" novalidate>
+        <div class="field">
+          <label for="login">Username</label>
+          <div class="control">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="3.6"/><path d="M4.5 20c.9-4 3.8-6 7.5-6s6.6 2 7.5 6"/></svg>
+            <input id="login" name="login" type="text" maxlength="50" autocomplete="username" autocapitalize="none" spellcheck="false" placeholder="Your username" required autofocus>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="password">Password</label>
+          <div class="control">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="10.5" width="16" height="10" rx="2.5"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5"/></svg>
+            <input id="password" name="password" type="password" maxlength="50" autocomplete="current-password" placeholder="Your password" required>
+            <button type="button" class="toggle" id="togglePw" aria-label="Show password" aria-pressed="false">
+              <svg class="eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
+              <svg class="eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.9 17.9A10.4 10.4 0 0 1 12 19c-6.4 0-10-7-10-7a17.6 17.6 0 0 1 4.1-4.9M9.9 5.2A9.7 9.7 0 0 1 12 5c6.4 0 10 7 10 7a17.7 17.7 0 0 1-2.2 3.2M9.9 9.9a3 3 0 0 0 4.2 4.2M2 2l20 20"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <div id="error" class="error" role="alert" hidden>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.5"/><path d="M12 7.5v5M12 16.2h.01"/></svg>
+          <span id="errorText"></span>
+        </div>
+
+        <button type="submit" class="submit" id="submitBtn">
+          <span class="label">Sign in</span>
+          <span class="spinner" aria-hidden="true"></span>
+        </button>
+      </form>
+
+      <p class="alt">New here? <a href="register.html">Create an account</a></p>
+    </section>
+
+  </main>
+
+  <script src="js/login.js"></script>
+</body>
+</html>
