@@ -144,8 +144,7 @@ switch ($method) {
                                           WHERE ID = :id AND UserID = :uid LIMIT 1");
                     
                     $stmt->execute([':id' => $id, ':uid' => $userId]);
-                    $contact = $stmt->fetch();
-
+                    $contact = $stmt->fetch(); //$contact["nane"] $contact["Name"]
                     if(!$contact){
                         respond(404, ['error' => 'Contact not found']);
                     }
@@ -179,11 +178,13 @@ switch ($method) {
                                           Nickname as nickname,
                                           Phone as phone,
                                           Address as address,
-                                          ProfilePic as profilePic
+                                          ProfilePic as profilePic,
+                                          DateCreated as dateCreated,
+                                          DateUpdated as dateUpdated
                                           FROM Contacts
-                                          WHERE CONCAT(FirstName, ' ', LastName) LIKE :q AND UserID = :uid
+                                          WHERE (CONCAT(FirstName, ' ', LastName) LIKE :searchName OR Nickname LIKE :searchNickname) AND UserID = :uid
                                           ORDER BY FirstName, LastName");
-                    $stmt->execute([':uid' => $userId, ':q' => $like]);
+                    $stmt->execute([':uid' => $userId, ':searchName' => $like, ':searchNickname' => $like]);
                     $rows = $stmt->fetchAll();
                     $results = [];
                     foreach ($rows as $row) {
