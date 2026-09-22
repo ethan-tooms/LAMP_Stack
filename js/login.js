@@ -7,7 +7,6 @@ const SESSION_KEY = 'contactsUser';
 const form       = document.getElementById('loginForm');
 const loginEl    = document.getElementById('login');
 const passEl     = document.getElementById('password');
-const rememberEl = document.getElementById('remember');
 const submitBtn  = document.getElementById('submitBtn');
 const errorBox   = document.getElementById('error');
 const errorText  = document.getElementById('errorText');
@@ -35,12 +34,10 @@ function setLoading(loading) {
   submitBtn.setAttribute('aria-busy', String(loading));
 }
 
-function saveSession(user, persist) {
-  const data = JSON.stringify(user);
-  const [keep, drop] = persist ? [localStorage, sessionStorage] : [sessionStorage, localStorage];
+function saveSession(user) {
   try {
-    drop.removeItem(SESSION_KEY);
-    keep.setItem(SESSION_KEY, data);
+    sessionStorage.removeItem(SESSION_KEY);
+    localStorage.setItem(SESSION_KEY, JSON.stringify(user));
   } catch (_) { /* storage blocked — nothing more we can do */ }
 }
 
@@ -78,7 +75,7 @@ form.addEventListener('submit', async (event) => {
         lastName: data.lastName,
         token: data.token,
         isAdmin
-      }, rememberEl.checked);
+      });
       window.location.href = isAdmin ? ADMIN_PAGE : USER_PAGE;
       return;
     }

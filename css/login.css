@@ -128,37 +128,6 @@ body {
   line-height: 1.55;
 }
 
-/* decorative contact cards */
-.cards { display: grid; gap: .7rem; max-width: 20rem; }
-.contact {
-  display: flex;
-  align-items: center;
-  gap: .8rem;
-  padding: .7rem .9rem;
-  border-radius: 14px;
-  background: rgba(255, 255, 255, .14);
-  border: 1px solid rgba(255, 255, 255, .24);
-  backdrop-filter: blur(8px);
-  animation: float 6s ease-in-out infinite;
-}
-.contact:nth-child(2) { margin-left: 1.6rem; animation-delay: -2s; }
-.contact:nth-child(3) { margin-left: .6rem;  animation-delay: -4s; }
-.avatar {
-  flex: none;
-  display: grid;
-  place-items: center;
-  width: 2.4rem; height: 2.4rem;
-  border-radius: 50%;
-  font-size: .85rem;
-  font-weight: 700;
-  color: #2a1a6e;
-  background: linear-gradient(135deg, #fff, #dcd6ff);
-}
-.contact:nth-child(2) .avatar { background: linear-gradient(135deg, #fff, #ffd3ee); color: #6b1450; }
-.contact:nth-child(3) .avatar { background: linear-gradient(135deg, #fff, #c9f2ff); color: #0e4a63; }
-.contact strong { display: block; font-size: .92rem; }
-.contact span   { display: block; font-size: .78rem; color: rgba(255, 255, 255, .75); }
-
 /* ── Form panel ─────────────────────────────────────── */
 .panel {
   display: flex;
@@ -233,16 +202,7 @@ form { display: grid; gap: 1.1rem; }
 .toggle[aria-pressed="true"] .eye     { display: none; }
 .toggle[aria-pressed="true"] .eye-off { display: block; }
 
-.row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  font-size: .88rem;
-}
-.check { display: inline-flex; align-items: center; gap: .5rem; color: var(--muted); cursor: pointer; }
-.check input { width: 1rem; height: 1rem; margin: 0; accent-color: var(--accent); cursor: pointer; }
-
+.error[hidden] { display: none; }
 .error {
   display: flex;
   align-items: flex-start;
@@ -294,7 +254,6 @@ a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-
 
 /* ── Animations ─────────────────────────────────────── */
 @keyframes rise  { from { opacity: 0; transform: translateY(18px) scale(.985); } }
-@keyframes float { 50% { transform: translateY(-6px); } }
 @keyframes spin  { to { transform: rotate(360deg); } }
 @keyframes shake { 20%, 60% { transform: translateX(-4px); } 40%, 80% { transform: translateX(4px); } }
 
@@ -306,5 +265,5 @@ a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-
 @media (max-width: 800px) {
   .shell { grid-template-columns: 1fr; max-width: 30rem; }
   .brand { padding: 1.4rem 1.6rem; gap: 0; }
-  .brand h2, .brand p, .cards { display: none; }
+  .brand h2, .brand p { display: none; }
 }
