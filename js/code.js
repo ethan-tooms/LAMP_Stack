@@ -215,52 +215,69 @@ function registerUser() {
     }
 }
 
-function addColor() {
-  let newColorInput = document.getElementById("colorText");
-  let newColor = newColorInput ? newColorInput.value.trim() : "";
-  let resultEl = document.getElementById("colorAddResult");
-  resultEl.innerHTML = "";
+function addContact() {
+    let firstNameInput = document.getElementById("contactFirstName");
+    let lastNameInput = document.getElementById("contactLastName")
+    let emailInput = document.getElementById("contactEmail");
+    let phoneInput = document.getElementById("contactPhone");
 
-  if (!newColor) {
-    resultEl.className = "text-warning small fw-semibold";
-    resultEl.innerHTML = "<i class='bi bi-exclamation-triangle-fill me-1'></i> Please enter a color name";
-    return;
-  }
+    let firstNameValue = firstNameInput ? firstNameInput.value.trim() : "";
+    let lastNameValue = lastNameInput ? lastNameInput.value.trim() : "";
+    let emailValue = emailInput ? emailInput.value.trim() : "";
+    let phoneValue = phoneInput ? phoneInput.value.trim() : "";
 
-  let jsonPayload = JSON.stringify({ color: newColor });
-  let url = urlBase;
+    let resultEl = document.getElementById("contactAddResult");
+    resultEl.innerHTML = "";
+    if (!firstNameValue || !lastNameValue) {
+        resultEl.className = "text-warning small fw-semibold";
+        resultEl.innerHTML = "<i class='bi bi-exclamation-triangle-fill me-1'></i> First and last name are required";
+        return;
+    }
 
-  let xhr = new XMLHttpRequest();
-  xhr.open("POST", url, true);
-  xhr.setRequestHeader("Content-type", "application/json; charset=UTF-8");
-  xhr.setRequestHeader("Authorization", "Bearer " + userId);
-  xhr.setRequestHeader("X-User-Id", userId);
+    let jsonPayload = JSON.stringify({
+        firstName: firstNameValue,
+        lastName: lastNameValue,
+        email: emailValue,
+        phone: phoneValue
+    });
 
-  try {
-    xhr.onreadystatechange = function () {
-      if (this.readyState === 4) {
-        if (this.status === 201 || this.status === 200) {
-          resultEl.className = "text-success-wcag small fw-semibold";
-          resultEl.innerHTML = "<i class='bi bi-check-circle-fill me-1'></i> Color successfully added!";
-          newColorInput.value = "";
-          searchColor();
-        } else {
-          try {
-            let res = JSON.parse(xhr.responseText);
-            resultEl.className = "text-danger-wcag small fw-semibold";
-            resultEl.innerHTML = res.error || "Failed to add color";
-          } catch (e) {
-            resultEl.className = "text-danger-wcag small fw-semibold";
-            resultEl.innerHTML = "Error adding color";
-          }
-        }
-      }
-    };
-    xhr.send(jsonPayload);
-  } catch (err) {
-    resultEl.className = "text-danger-wcag small fw-semibold";
-    resultEl.innerHTML = err.message;
-  }
+    let url = urlBase + "?action=contactAdd";
+    let xhr = new XMLHttpRequest();
+    xhr.open("POST", url, true);
+    xhr.setRequestHeader("Content-type", "application/json; charset=UTF-8");
+    xhr.setRequestHeader("Authorization", "Bearer " + userId);
+    xhr.setRequestHeader("X-User-Id", userId);
+
+    try {
+        xhr.onreadystatechange = function () {
+            if (this.readyState === 4) {
+                if (this.status === 201 || this.status === 200) {
+                    resultEl.className = "text-success-wcag small fw-semibold";
+                    resultEl.innerHTML = "<i class='bi bi-check-circle-fill me-1'></i> Contact successfully added!";
+
+                    firstNameInput.value = "";
+                    lastNameInput.value = "";
+                    emailInput.value = "";
+                    phoneInput.value = "";
+
+                    searchContacts();
+                } else {
+                    try {
+                        let res = JSON.parse(xhr.responseText);
+
+                        resultEl.className = "text-danger-scag small fw-semibold";
+                        resultEl.innerHTML = res.error || "Failed to add contact";
+                    } catch (e) {
+                        resultEl.className = "text-danger-wcag small fw-semibold";
+                        resultEl.innerHTML = "Error adding contact";
+                    }
+                }
+            }
+        };
+    } catch (err) {
+        resultEl.className = "text-danger-wcag small fw-semibold";
+        resultEl.innerHTML = err.message;
+    }
 }
 
 function searchContacts() {
@@ -269,7 +286,7 @@ function searchContacts() {
   let resultSpan = document.getElementById("contactSearchResult");
   resultSpan.innerHTML = "";
 
-  let url = urlBase + "?action=contacts" (srch ? ("?q=" + encodeURIComponent(srch)) : "");
+  let url = urlBase + "?action=contactSearch" + (srch ? ("?q=" + encodeURIComponent(srch)) : "");
 
   let xhr = new XMLHttpRequest();
   xhr.open("GET", url, true);
@@ -284,44 +301,54 @@ function searchContacts() {
         let targetP = document.getElementById("contactList") || document.getElementsByTagName("p")[0];
 
         let contacts = jsonObject.contacts || [];
-        if (colors.length === 0 && Array.isArray(jsonObject.results) && jsonObject.results.length > 0) {
-          colors = jsonObject.results.map(name => ({ id: null, name: name }));
+        if (contacts.length === 0 && Array.isArray(jsonObject.results) && jsonObject.results.length > 0) {
+          contacts = jsonObject.results.map(name => ({ id: null, name: name }));
         }
 
-        if (colors.length === 0 || jsonObject.error === "No Records Found") {
-          if (targetP) targetP.innerHTML = `<div class="text-secondary-contrast small italic py-2"><i class="bi bi-info-circle me-1"></i> No matching colors found.</div>`;
+        if (contacts.length === 0 || jsonObject.error === "No Records Found") {
+          if (targetP) targetP.innerHTML = `<div class="text-secondary-contrast small italic py-2"><i class="bi bi-info-circle me-1"></i> No matching contacts found.</div>`;
           return;
         }
 
-        let colorList = "";
-        for (let i = 0; i < colors.length; i++) {
-          let c = colors[i];
-          let colorName = typeof c === 'string' ? c : c.name;
-          let colorId = (typeof c === 'object' && c.id) ? c.id : null;
+        let contactList = "";
+        for (let i = 0; i < contacts.length; i++) {
+          let c = contacts[i];
 
-          colorList += `<span class="badge rounded-pill bg-dark-subtle text-body border border-secondary px-3 py-2 fs-6 shadow-sm d-inline-flex align-items-center me-2 mb-2">
-            <span class="d-inline-block rounded-circle me-2 border" style="width: 14px; height: 14px; background-color: ${colorName};"></span>
-            <span class="me-2">${colorName}</span>
-            <button type="button" class="btn-close btn-close-white" style="font-size: 0.65rem;" onclick="deleteColor(${colorId ? colorId : `'${colorName.replace(/'/g, "\\'")}'`});" title="Delete Color"></button>
-          </span>`;
+          contactList += `<div class="contact-item border rounded p-3 mb-2">
+          <input id="firstName-${c.id}" value="${c.firstName || ""}" disabled class="form-control mb-2">
+          <input id="lastName-${c.id}" value=${c.lastName || ""}" disabled class="form-control mb-2">
+          <input id="email-${c.id}" value=${c.email || ""}" disabled class="form-control mb-2">
+          <input id="phone-${c.id}" value=${c.phone || ""}" disabled class="form-control mb-2">
+          <button id="editButton-${c.id}" type="button" class="btn btn-primary" onclick="editContact(${c.id})">Edit</button>
+          <button id="deleteButton-${c.id}" type="button" class="btn btn-danger" onclick="deleteContact(${c.id})">Delete</button>
+          <button id="saveButton-${c.id}" type="button" class="btn btn-success" style="display:none;" onclick="saveContact(${c.id})">Save</button>
+          <button id="cancelButton-${c.id}" type="button" class="btn btn-secondary" style="display:none;" onclick="cancelEdit(${c.id})">Cancel</button>
+          </div>`
         }
 
         if (targetP) {
-          targetP.innerHTML = colorList;
+          targetP.innerHTML = contactList;
+        }
+      } else {
+        try {
+            let res = JSON.parse(xhr.responseText);
+            resultSpan.innerHTML = res.error || "Failed to search contacts";
+        } catch (e) {
+            resultSpan.innerHTML = "Error searching contacts";
         }
       }
     };
+
     xhr.send();
   } catch (err) {
     resultSpan.innerHTML = err.message;
   }
 }
 
-function deleteColor(identifier) {
-  if (!identifier && identifier !== 0) return;
+function deleteContact(contactId) {
+  if (!contactId && contactId !== 0) return;
 
-  let param = (typeof identifier === 'number') ? ("id=" + identifier) : ("name=" + encodeURIComponent(identifier));
-  let url = urlBase + "?" + param;
+  let url = urlBase + "?action=contactDel&id=" + encodeURIComponent(contactId);
 
   let xhr = new XMLHttpRequest();
   xhr.open("DELETE", url, true);
@@ -331,11 +358,318 @@ function deleteColor(identifier) {
   try {
     xhr.onreadystatechange = function () {
       if (this.readyState === 4 && this.status === 200) {
-        searchColor();
+        searchContacts();
+      } else {
+        try {
+            let res = JSON.parse(xhr.responseText);
+            alert(res.error || "Failed to delete contact");
+        } catch (e) {
+            alert("Error deleting contact");
+        }
       }
     };
     xhr.send();
   } catch (err) {
     console.error(err);
   }
+}
+
+// Search for admin dashboard
+function searchUsers() {
+    // Check if admin
+    if (isAdmin !== 1) {
+        alert("Administrator access required");
+        return;
+    }
+
+    let srchInput = document.getElementById("userSearchText");
+    let srch = srchInput ? srchInput.value.trim() : "";
+    let resultSpan = document.getElementById("userSearchResult");
+    resultSpan.innerHTML = "";
+
+    let url = urlBase + "?action=userSearch" + (srch ? "&q=" + encodeURIComponent(srch) : "");
+
+    let xhr = new XMLHttpRequest();
+    xhr.open("GET", url, true);
+    xhr.setRequestHeader("Authorization", "Bearer " + userId);
+    xhr.setRequestHeader("X-User-Id", userId);
+
+    try {
+        xhr.onreadystatechange = function () {
+            if (this.readyState === 4 && this.status === 200) {
+                let jsonObject = JSON.parse(xhr.responseText);
+                let users = jsonObject.users || [];
+                let taregtP = document.getElementById("userList");
+
+                if (users.length === 0) {
+                    if (targetP) {
+                        taregtP.innerHTML = `<div class="text-secondary-contrast small italic py-2"
+                        <i class="bi bi-info-circle me-1"></i>
+                        No users found.
+                        </div>`;
+                    }
+                    return;
+                }
+
+                let userList = "";
+                for (let i = 0; i < users.length; i++) {
+                    let u = users[i];
+                    let status = parseInt(u.isEnabled) === 1 ? "Enabled" : "Disabled";
+                    let adminStatus = parseInt(u.isAdmin) === 1 ? "Administrator" : "Standard User";
+
+                    userList += `<div class="user-item border rounded p-3 mb-2">
+                    <strong>${u.firstName} ${u.lastName}</strong>
+                    <div>Login: ${u.login}</div>
+                    <div>Account Staus: ${u.status}</div>
+                    <div>Account Type: ${u.adminStatus}</div>
+                    <button type="button" class="btn btn-sm btn-danger" onclick="disableUser(${u.id})">Disable User</button>
+                    <button type="button" class="btn btn-sm btn-warning" onclick="makeAdmin(${u.id})">Make Admin</button>
+                    <button type="button" class="btn btn-sm btn-warning" onclick="changeUserPassword(${u.id})">Change Password</button>
+                    <div id="password-${u.id}" class="mt-2"></div>
+                    </div>`;
+                }
+
+                if (targetP) {
+                    taregtP.innerHTML = userList;
+                }
+            } else {
+                try {
+                    let res = JSON.parse(xhr.responseText);
+                    resultSpan.innerHTML = res.error || "Failed to search users";
+                } catch (e) {
+                    resultSpan.innerHTML = "Error searching users";
+                }
+            }
+        };
+        xhr.send();
+    } catch (err) {
+        resultSpan.innerHTML = err.message;
+    }
+}
+
+function disableUser(targetId) {
+    // Check if admin
+    if (isAdmin !== 1) {
+        alert("Administrator access required");
+        return;
+    }
+
+    let url = urlBase + "?action=userDisable&id=" + encodeURIComponent(targetId);
+    let xhr = XMLHttpRequest();
+    xhr.open("PUT", url, true);
+    xhr.setRequestHeader("Authorization", "Bearer " + userId);
+    xhr.setRequestHeader("X-User-Id", userId);
+
+    try {
+        xhr.onreadystatechange = function () {
+            if (this.readyState === 4 && this.status === 200) {
+                searchUsers();
+            } else {
+                try {
+                    let res = JSON.parse(xhr.responseText);
+                    alert(res.error || "Failed to disable user");
+                } catch (e) {
+                    alert("Error disabling user");
+                }
+            }
+        };
+        xhr.send();
+    } catch (err) {
+        console.error(err);
+    }
+}
+
+function editContact(contactId) {
+    let firstNameInput = document.getElementById("firstName-" + contactId);
+    let lastNameInput = document.getElementById("lastName-" + contactId);
+    let emailInput = document.getElementById("email-" + contactId);
+    let phoneInput = document.getElementById("email-" + contactId);
+
+    let editButton = document.getElementById("editButton-" + contactId);
+    let deleteButton = document.getElementById("deleteButton-" + contactId);
+    let saveButton = document.getElementById("saveButton-" + contactId);
+    let cancelButton = document.getElementById("cancelButton-" + contactId);
+
+    if (!firstNameInput || !lastNameInput || !emailInput || !phoneInput) {
+        return;
+    }
+
+    // Allows user to edit contact fields
+    firstNameInput.disabled = false;
+    lastNameInput.disabled = false;
+    emailInput.disabled = false;
+    phoneInput.disabled = false;
+
+    // Hide edit and delete buttons
+    editButton.style.display = "none";
+    deleteButton.style.display = "none";
+
+    // Show save and cancel buttons
+    saveButton.style.display = "inline-block";
+    cancelButton.style.display = "inline-block";
+}
+
+function saveContact(contactId) {
+    let firstNameInput = document.getElementById("firstName-" + contactId);
+    let lastNameInput = document.getElementById("lastName-" + contactId);
+    let emailInput = document.getElementById("email-" + contactId);
+    let phoneInput = document.getElementById("email-" + contactId);
+
+    let firstNameValue = firstNameInput.value.trim();
+    let lastNameValue = lastNameInput.value.trim();
+    let emailValue = emailInput.value.trim();
+    let phoneValue = phoneInput.value.trim();
+
+    if (!firstName || !lastName) {
+        alert("First and last name are required");
+        return;
+    }
+
+    let jsonPayload = JSON.stringify({
+        firstName: firstNameValue,
+        lastName: lastNameValue,
+        email: emailValue,
+        phone: phoneValue
+    });
+
+    let url = urlBase + "?action=contactSave&id=" + encodeURIComponent(contactId);
+    let xhr = new XMLHttpRequest();
+    xhr.open("PUT", url, true);
+    xhr.setRequestHeader("Content-type", "application/json; charset=UTF-8");
+    xhr.setRequestHeader("Authorization", "Bearer " + userId);
+    xhr.setRequestHeader("X-User-Id", userId);
+
+    try {
+        xhr.onreadystatechange = function () {
+            if (this.readyState === 4 && this.status === 200) {
+                // Reloads contacts after save
+                searchContacts()
+            } else {
+                try {
+                    let res = JSON.parse(xhr.responseText);
+                    alert(res.error || "Failed to update contact");
+                } catch (e) {
+                    addContact;ErrorEvent("Errpr updating contact");
+                }
+            }
+        };
+        xhr.send(jsonPayload);
+    } catch (err) {
+        console.error(err);
+    }
+}
+
+function cancelEdit(contactId) {
+    //No changes were made, just reload contacts
+    searchContacts();
+}
+
+function makeAdmin(targetId) {
+    // Check if admin
+    if (isAdmin !== 1) {
+        alert("Administrator access required");
+        return;
+    }
+
+    let url = urlBase + "?action=makeAdmin&id=" + encodeURIComponent(targetId);
+    let xhr = new XMLHttpRequest();
+    xhr.open("PUT", url, true);
+    xhr.setRequestHeader("Authorization", "Bearer " + userId);
+    xhr.setRequestHeader("X-User-Id", userId);
+
+    try {
+        xhr.onreadystatechange = function () {
+            if (this.readyState === 4 && this.status === 200) {
+                searchUsers();
+            } else {
+                try {
+                    let res = JSON.parse(xhr.responseText);
+                    alert(res.error || "Failed to make user an administrator");
+                } catch (e) {
+                    alert("Error making user an administrator");
+                }
+            }
+        };
+        xhr.send();
+    } catch (err) {
+        console.error(err);
+    }
+}
+
+function editPassword(targetId) {
+    //Check if admin
+    if (isAdmin !== 1) {
+        alert("Administrator access required");
+        return;
+    }
+
+    let passwordArea = document.getElementById("password-" + targetId);
+    if (!passwordArea) {
+        return;
+    }
+
+    passwordArea.innerHTML = 
+    `<input type="password" id="newPassword-${targetId}" class="form-control mb-2" placeholder="New password">
+    <input type="password" id="confirmPassword-${targetId}" class="form-control mb-2" placeholder="Confirm new password">
+    <button type="button" class="btn btn-success" onclick="savePassword(${targetId})">Confirm</button>
+    <button type="button" class="btn btn-secondary" onclick="cancelPassword(${targetId})">Cancel</button>`;
+}
+
+function savePassword(targetId) {
+    //Check if admin
+    if (isAdmin !== 1) {
+        alert("Administrator access required");
+        return;
+    }
+
+    let newPasswordInput = document.getElementById("newPassword-" + targetId);
+    let confirmPasswordInput = document.getElementById("confirmPassword-" + targetId);
+
+    let newPassword = newPasswordInput ? newPasswordInput.value.trim() : "";
+    let confirmPassword = confirmPasswordInput ? confirmPasswordInput.value.trim() : "";
+
+    if (!newPassword || ! confirmPassword) {
+        alert("Please enter the password twice.");
+        return;
+    }
+
+    if (newPassword !== confirmPassword) {
+        alert("Passwords do not match.");
+        return;
+    }
+
+    let jsonPayload =JSON.stringify({
+        password: newPassword
+    });
+
+    let url = urlBase + "?action=changePassword&id=" + encodeURIComponent(targetId);
+    let xhr = new XMLHttpRequest();
+    xhr.open("PUT", url, true);
+    xhr.setRequestHeader("Content-type", "application/json; charset=UTF-8");
+    xhr.setRequestHeader("Authorization", "Bearer " + userId);
+    xhr,setRequestHeader("X-User-Id", userId);
+
+    try {
+        xhr.onreadystatechange = function () {
+            if (this.readyState === 4 && this.status === 200) {
+                alert("Password successfully changed.");
+                searchUsers();
+            } else {
+                try {
+                    let res = JSON.parse(xhr.responseText);
+                    alert(res.error || "Failed to change password");
+                } catch (e) {
+                    alert("Error changing password");
+                }
+            }
+        };
+        xhr.send(jsonPayload);
+    } catch (err) {
+        console.error(err);
+    }
+}
+
+function cancelPassword(targetId) {
+    //No changes made, just reload users
+    searchUsers();
 }
