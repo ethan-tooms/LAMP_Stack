@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>Admin · Contacts Manager</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%234f46e5'/%3E%3Ccircle cx='16' cy='12.5' r='4.5' fill='white'/%3E%3Cpath d='M7.5 25c.8-4.6 4.2-7 8.5-7s7.7 2.4 8.5 7z' fill='white'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body onload="initAdminPage();">
+
+  <header class="topbar">
+    <div class="logo">
+      <span class="logo-mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.6"/><path d="M4.5 20c.9-4 3.8-6 7.5-6s6.6 2 7.5 6"/></svg>
+      </span>
+      Contacts Manager <span class="badge text-bg-light ms-1" style="color:#4338ca;">Admin</span>
+    </div>
+    <div class="who">
+      <span id="userName"></span>
+      <button type="button" class="logout-btn" onclick="doLogout()">
+        <i class="bi bi-box-arrow-right me-1"></i>Sign out
+      </button>
+    </div>
+  </header>
+
+  <main class="page">
+    <div>
+      <h1>Manage users</h1>
+      <p class="subtitle">Search for a user to see their account, disable access, grant admin rights, or reset their password.</p>
+    </div>
+
+    <section class="card">
+      <h2><i class="bi bi-search me-1"></i>Search users</h2>
+      <div class="search-row">
+        <input type="text" id="userSearchText" class="form-control" placeholder="Search by name or username" onkeydown="if (event.key === 'Enter') searchUsers();">
+        <button type="button" class="btn btn-primary" onclick="searchUsers()">Search</button>
+      </div>
+      <span id="userSearchResult" class="status-line"></span>
+      <div id="userList">
+        <div class="empty-state"><i class="bi bi-hourglass-split me-1"></i>Loading users…</div>
+      </div>
+    </section>
+  </main>
+
+  <script src="js/code.js"></script>
+  <script>
+    // Page-level guard: code.js's readCookie() logs any user in and
+    // redirects to index.html only if there's no valid session at all.
+    // This page additionally requires isAdmin === 1, and otherwise
+    // sends standard users back to their own dashboard.
+    function initAdminPage() {
+      readCookie();
+      if (typeof isAdmin === "undefined" || isAdmin !== 1) {
+        window.location.href = "dashboard.html";
+        return;
+      }
+      searchUsers();
+    }
+  </script>
+</body>
+</html>

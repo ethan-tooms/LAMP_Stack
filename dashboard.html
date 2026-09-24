@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>My contacts · Contacts Manager</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%234f46e5'/%3E%3Ccircle cx='16' cy='12.5' r='4.5' fill='white'/%3E%3Cpath d='M7.5 25c.8-4.6 4.2-7 8.5-7s7.7 2.4 8.5 7z' fill='white'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body onload="readCookie(); searchContacts();">
+
+  <header class="topbar">
+    <div class="logo">
+      <span class="logo-mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.6"/><path d="M4.5 20c.9-4 3.8-6 7.5-6s6.6 2 7.5 6"/></svg>
+      </span>
+      Contacts Manager
+    </div>
+    <div class="who">
+      <span id="userName"></span>
+      <button type="button" class="logout-btn" onclick="doLogout()">
+        <i class="bi bi-box-arrow-right me-1"></i>Sign out
+      </button>
+    </div>
+  </header>
+
+  <main class="page">
+    <div>
+      <h1>My contacts</h1>
+      <p class="subtitle">Search, add, edit, or remove people from your contact list.</p>
+    </div>
+
+    <section class="card">
+      <h2><i class="bi bi-search me-1"></i>Search</h2>
+      <div class="search-row">
+        <input type="text" id="searchText" class="form-control" placeholder="Search by name or email" onkeydown="if (event.key === 'Enter') searchContacts();">
+        <button type="button" class="btn btn-primary" onclick="searchContacts()">Search</button>
+      </div>
+      <span id="contactSearchResult" class="status-line"></span>
+      <div id="contactList">
+        <div class="empty-state"><i class="bi bi-hourglass-split me-1"></i>Loading your contacts…</div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2><i class="bi bi-person-plus me-1"></i>Add a contact</h2>
+      <div class="row g-2">
+        <div class="col-12 col-sm-6">
+          <input type="text" id="contactFirstName" class="form-control mb-2" placeholder="First name">
+        </div>
+        <div class="col-12 col-sm-6">
+          <input type="text" id="contactLastName" class="form-control mb-2" placeholder="Last name">
+        </div>
+        <div class="col-12 col-sm-6">
+          <input type="email" id="contactEmail" class="form-control mb-2" placeholder="Email (optional)">
+        </div>
+        <div class="col-12 col-sm-6">
+          <input type="tel" id="contactPhone" class="form-control mb-2" placeholder="Phone (optional)">
+        </div>
+      </div>
+      <button type="button" class="btn btn-primary" onclick="addContact()">
+        <i class="bi bi-plus-lg me-1"></i>Add contact
+      </button>
+      <div id="contactAddResult" class="mt-2"></div>
+    </section>
+  </main>
+
+  <script src="js/code.js"></script>
+</body>
+</html>
