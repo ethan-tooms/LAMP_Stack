@@ -265,7 +265,7 @@ function addContact() {
                     try {
                         let res = JSON.parse(xhr.responseText);
 
-                        resultEl.className = "text-danger-scag small fw-semibold";
+                        resultEl.className = "text-danger-wcag small fw-semibold";
                         resultEl.innerHTML = res.error || "Failed to add contact";
                     } catch (e) {
                         resultEl.className = "text-danger-wcag small fw-semibold";
