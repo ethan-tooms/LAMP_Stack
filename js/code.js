@@ -91,7 +91,7 @@ function saveCookie() {
     userId +
     ",isAdmin=" +
     isAdmin +
-    "isEnabled=" +
+    ",isEnabled=" +
     isEnabled +
     ";expires=" +
     date.toGMTString() +
@@ -274,6 +274,7 @@ function addContact() {
                 }
             }
         };
+        xhr.send(jsonPayload);
     } catch (err) {
         resultEl.className = "text-danger-wcag small fw-semibold";
         resultEl.innerHTML = err.message;
@@ -286,7 +287,7 @@ function searchContacts() {
   let resultSpan = document.getElementById("contactSearchResult");
   resultSpan.innerHTML = "";
 
-  let url = urlBase + "?action=contactSearch" + (srch ? ("?q=" + encodeURIComponent(srch)) : "");
+  let url = urlBase + "?action=contactSearch" + (srch ? ("&q=" + encodeURIComponent(srch)) : "");
 
   let xhr = new XMLHttpRequest();
   xhr.open("GET", url, true);
@@ -316,9 +317,9 @@ function searchContacts() {
 
           contactList += `<div class="contact-item border rounded p-3 mb-2">
           <input id="firstName-${c.id}" value="${c.firstName || ""}" disabled class="form-control mb-2">
-          <input id="lastName-${c.id}" value=${c.lastName || ""}" disabled class="form-control mb-2">
-          <input id="email-${c.id}" value=${c.email || ""}" disabled class="form-control mb-2">
-          <input id="phone-${c.id}" value=${c.phone || ""}" disabled class="form-control mb-2">
+          <input id="lastName-${c.id}" value="${c.lastName || ""}" disabled class="form-control mb-2">
+          <input id="email-${c.id}" value="${c.email || ""}" disabled class="form-control mb-2">
+          <input id="phone-${c.id}" value="${c.phone || ""}" disabled class="form-control mb-2">
           <button id="editButton-${c.id}" type="button" class="btn btn-primary" onclick="editContact(${c.id})">Edit</button>
           <button id="deleteButton-${c.id}" type="button" class="btn btn-danger" onclick="deleteContact(${c.id})">Delete</button>
           <button id="saveButton-${c.id}" type="button" class="btn btn-success" style="display:none;" onclick="saveContact(${c.id})">Save</button>
@@ -399,11 +400,11 @@ function searchUsers() {
             if (this.readyState === 4 && this.status === 200) {
                 let jsonObject = JSON.parse(xhr.responseText);
                 let users = jsonObject.users || [];
-                let taregtP = document.getElementById("userList");
+                let targetP = document.getElementById("userList");
 
                 if (users.length === 0) {
                     if (targetP) {
-                        taregtP.innerHTML = `<div class="text-secondary-contrast small italic py-2"
+                        targetP.innerHTML = `<div class="text-secondary-contrast small italic py-2"
                         <i class="bi bi-info-circle me-1"></i>
                         No users found.
                         </div>`;
@@ -420,17 +421,17 @@ function searchUsers() {
                     userList += `<div class="user-item border rounded p-3 mb-2">
                     <strong>${u.firstName} ${u.lastName}</strong>
                     <div>Login: ${u.login}</div>
-                    <div>Account Staus: ${u.status}</div>
-                    <div>Account Type: ${u.adminStatus}</div>
+                    <div>Account Staus: ${status}</div>
+                    <div>Account Type: ${adminStatus}</div>
                     <button type="button" class="btn btn-sm btn-danger" onclick="disableUser(${u.id})">Disable User</button>
                     <button type="button" class="btn btn-sm btn-warning" onclick="makeAdmin(${u.id})">Make Admin</button>
-                    <button type="button" class="btn btn-sm btn-warning" onclick="changeUserPassword(${u.id})">Change Password</button>
+                    <button type="button" class="btn btn-sm btn-warning" onclick="editPassword(${u.id})">Change Password</button>
                     <div id="password-${u.id}" class="mt-2"></div>
                     </div>`;
                 }
 
                 if (targetP) {
-                    taregtP.innerHTML = userList;
+                    targetP.innerHTML = userList;
                 }
             } else {
                 try {
@@ -455,7 +456,7 @@ function disableUser(targetId) {
     }
 
     let url = urlBase + "?action=userDisable&id=" + encodeURIComponent(targetId);
-    let xhr = XMLHttpRequest();
+    let xhr = new XMLHttpRequest();
     xhr.open("PUT", url, true);
     xhr.setRequestHeader("Authorization", "Bearer " + userId);
     xhr.setRequestHeader("X-User-Id", userId);
@@ -483,7 +484,7 @@ function editContact(contactId) {
     let firstNameInput = document.getElementById("firstName-" + contactId);
     let lastNameInput = document.getElementById("lastName-" + contactId);
     let emailInput = document.getElementById("email-" + contactId);
-    let phoneInput = document.getElementById("email-" + contactId);
+    let phoneInput = document.getElementById("phone-" + contactId);
 
     let editButton = document.getElementById("editButton-" + contactId);
     let deleteButton = document.getElementById("deleteButton-" + contactId);
@@ -513,14 +514,14 @@ function saveContact(contactId) {
     let firstNameInput = document.getElementById("firstName-" + contactId);
     let lastNameInput = document.getElementById("lastName-" + contactId);
     let emailInput = document.getElementById("email-" + contactId);
-    let phoneInput = document.getElementById("email-" + contactId);
+    let phoneInput = document.getElementById("phone-" + contactId);
 
     let firstNameValue = firstNameInput.value.trim();
     let lastNameValue = lastNameInput.value.trim();
     let emailValue = emailInput.value.trim();
     let phoneValue = phoneInput.value.trim();
 
-    if (!firstName || !lastName) {
+    if (!firstNameValue || !lastNameValue) {
         alert("First and last name are required");
         return;
     }
@@ -549,7 +550,7 @@ function saveContact(contactId) {
                     let res = JSON.parse(xhr.responseText);
                     alert(res.error || "Failed to update contact");
                 } catch (e) {
-                    addContact;ErrorEvent("Errpr updating contact");
+                    alert("Error updating contact");
                 }
             }
         };
@@ -647,7 +648,7 @@ function savePassword(targetId) {
     xhr.open("PUT", url, true);
     xhr.setRequestHeader("Content-type", "application/json; charset=UTF-8");
     xhr.setRequestHeader("Authorization", "Bearer " + userId);
-    xhr,setRequestHeader("X-User-Id", userId);
+    xhr.setRequestHeader("X-User-Id", userId);
 
     try {
         xhr.onreadystatechange = function () {
