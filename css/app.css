@@ -1,0 +1,221 @@
+/* ============================================================
+   Shared tokens — mirrors css/login.css so every page feels
+   like one product. Loaded on register.html, dashboard.html
+   and admin.html, alongside Bootstrap.
+   ============================================================ */
+:root {
+  --bg: #f4f5fb;
+  --surface: #ffffff;
+  --text: #14162b;
+  --muted: #5d6280;
+  --border: #dcdff0;
+  --field-bg: #f8f9fe;
+  --accent: #4f46e5;
+  --accent-hover: #4338ca;
+  --accent-soft: rgba(79, 70, 229, .16);
+  --danger: #b42340;
+  --danger-bg: #fdeef1;
+  --danger-border: #f5c2cd;
+  --success: #157347;
+  --success-bg: #e9f7ef;
+  --success-border: #bfe6cf;
+  --shadow: 0 20px 50px -20px rgba(45, 40, 120, .25), 0 6px 16px -10px rgba(45, 40, 120, .15);
+  --font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0d0e1b;
+    --surface: #161829;
+    --text: #eceefb;
+    --muted: #9a9fc2;
+    --border: #2b2e4a;
+    --field-bg: #1c1f35;
+    --accent: #7c74ff;
+    --accent-hover: #918aff;
+    --accent-soft: rgba(124, 116, 255, .25);
+    --danger: #ff8fa5;
+    --danger-bg: #2c1420;
+    --danger-border: #5a2436;
+    --success: #6fd99a;
+    --success-bg: #123023;
+    --success-border: #1f4a35;
+    --shadow: 0 20px 50px -20px rgba(0, 0, 0, .6), 0 6px 16px -10px rgba(0, 0, 0, .4);
+  }
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { height: 100%; }
+body {
+  min-height: 100%;
+  margin: 0;
+  font-family: var(--font);
+  color: var(--text);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: var(--accent); font-weight: 600; text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* ── Topbar (dashboard + admin) ─────────────────────── */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: .9rem clamp(16px, 4vw, 40px);
+  background: linear-gradient(120deg, #4338ca 0%, #6d3fe0 55%, #c026d3 120%);
+  color: #fff;
+  box-shadow: var(--shadow);
+}
+.topbar .logo {
+  display: inline-flex;
+  align-items: center;
+  gap: .6rem;
+  font-weight: 700;
+  font-size: 1.05rem;
+}
+.topbar .logo-mark {
+  display: grid;
+  place-items: center;
+  width: 2.1rem; height: 2.1rem;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, .18);
+  border: 1px solid rgba(255, 255, 255, .3);
+}
+.topbar .logo-mark svg { width: 1.15rem; height: 1.15rem; }
+.topbar .who {
+  display: flex;
+  align-items: center;
+  gap: .9rem;
+  font-size: .92rem;
+  color: rgba(255, 255, 255, .9);
+}
+.topbar .who .text-primary { color: #d9d4ff !important; }
+.topbar .who .text-white { color: #fff !important; }
+.topbar .logout-btn {
+  border: 1px solid rgba(255, 255, 255, .35);
+  background: rgba(255, 255, 255, .1);
+  color: #fff;
+  font-weight: 600;
+  font-size: .85rem;
+  padding: .45rem .9rem;
+  border-radius: 9px;
+  cursor: pointer;
+  transition: background .15s;
+}
+.topbar .logout-btn:hover { background: rgba(255, 255, 255, .22); }
+
+/* ── Page shell ─────────────────────────────────────── */
+.page {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: clamp(20px, 4vw, 40px) clamp(16px, 4vw, 40px) 4rem;
+  display: grid;
+  gap: 1.5rem;
+}
+.page h1 { font-size: 1.5rem; letter-spacing: -.02em; margin: 0 0 .2rem; }
+.page .subtitle { color: var(--muted); margin: 0; }
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: clamp(18px, 3vw, 28px);
+  box-shadow: var(--shadow);
+}
+.card h2 {
+  font-size: 1.05rem;
+  margin: 0 0 1rem;
+  letter-spacing: -.01em;
+}
+
+/* ── Search bar ─────────────────────────────────────── */
+.search-row {
+  display: flex;
+  gap: .6rem;
+  margin-bottom: .75rem;
+  flex-wrap: wrap;
+}
+.search-row input.form-control { flex: 1 1 220px; }
+.status-line {
+  display: block;
+  min-height: 1.2rem;
+  font-size: .85rem;
+  color: var(--muted);
+  margin-bottom: .75rem;
+}
+
+/* ── Bootstrap re-skin so generated markup matches the brand ── */
+.form-control {
+  background: var(--field-bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 10px;
+}
+.form-control:focus {
+  background: var(--surface);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px var(--accent-soft);
+  color: var(--text);
+}
+.form-control:disabled { opacity: .75; }
+
+.btn { border-radius: 9px; font-weight: 600; font-size: .85rem; }
+.btn-primary { background: var(--accent); border-color: var(--accent); }
+.btn-primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+.btn-success { background: var(--success); border-color: var(--success); }
+.btn-danger { background: var(--danger); border-color: var(--danger); }
+.btn-warning { color: #4a3300; }
+.btn-secondary { background: var(--muted); border-color: var(--muted); }
+
+.border { border-color: var(--border) !important; }
+.rounded { border-radius: 14px !important; }
+
+.contact-item, .user-item {
+  background: var(--field-bg);
+  display: grid;
+  gap: .5rem;
+}
+.user-item strong { font-size: 1rem; }
+.user-item div { color: var(--muted); font-size: .9rem; }
+
+/* ── Inline status / result messages ───────────────────
+   code.js sets innerHTML + className directly on these,
+   using text-success-wcag / text-danger-wcag / text-warning /
+   text-secondary-contrast. Bootstrap ships text-warning; the
+   rest are ours, tuned for contrast against --surface.        */
+.text-success-wcag { color: var(--success); }
+.text-danger-wcag, .text-danger-scag { color: var(--danger); }
+.text-secondary-contrast { color: var(--muted); }
+
+.reg-msg, #contactAddResult, #contactSearchResult, #userSearchResult {
+  display: block;
+  min-height: 1.2rem;
+}
+.reg-msg:empty { margin: 0; }
+
+/* doLogin() only ever writes failure messages into #loginResult and
+   never sets a className, so color it as an error state by default. */
+#loginResult {
+  color: var(--danger);
+  font-size: .85rem;
+}
+#loginResult:empty { display: none; }
+
+.empty-state {
+  padding: 1rem 0;
+  color: var(--muted);
+  font-size: .9rem;
+  font-style: italic;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+
+@media (max-width: 600px) {
+  .topbar { flex-wrap: wrap; }
+  .topbar .who { order: 3; width: 100%; justify-content: space-between; }
+}
