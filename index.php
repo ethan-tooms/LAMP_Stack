@@ -37,21 +37,20 @@ if ($method === 'POST') {
             if (!isset($body['login']) || !isset($body['password']))
                 respond(400, ['error' => 'Login and password are required']);
             $login    = clean($body['login']);
-            $password = clean($body['password']);
+            $password = is_string($body['password']) ? $body['password'] : '';
 
             if (!$login || !$password)
                 respond(400, ['error' => 'Login and password are required']);
 
             $stmt = $db->prepare('
-                SELECT ID, FirstName, LastName, IsAdmin, IsEnabled
+                SELECT ID, FirstName, LastName, IsAdmin, IsEnabled, Password
                 FROM Users
                 WHERE Login = :login
-                AND Password = :password
                 LIMIT 1');
-            $stmt->execute([':login' => $login, ':password' => $password]);
+            $stmt->execute([':login' => $login]);
             $user = $stmt->fetch();
 
-            if (!$user) {
+            if (!$user || !password_verify($password, $user['Password'])) {
                 respond(401, [
                     'id'        => 0,
                     'firstName' => '',
@@ -81,7 +80,7 @@ if ($method === 'POST') {
                 respond(400, ['error' => 'First and last names are required']);
 
             $login    = clean($body['login']);
-            $password = clean($body['password']);
+            $password = is_string($body['password']) ? $body['password'] : '';
             $firstName    = clean($body['firstName']);
             $lastName    = clean($body['lastName']);
 
@@ -102,7 +101,8 @@ if ($method === 'POST') {
                 INSERT INTO Users (FirstName, LastName, Login, Password)
                 VALUES (:firstName, :lastName, :login, :password)
             ');
-            $stmt->execute([':firstName' => $firstName, ':lastName' => $lastName, ':login' => $login, ':password' => $password]);
+            $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+            $stmt->execute([':firstName' => $firstName, ':lastName' => $lastName, ':login' => $login, ':password' => $hashedPassword]);
             respond(201, [
                 'message' => 'User registered successfully',
                 'id'      => (int)$db->lastInsertId(),
