@@ -234,128 +234,74 @@ switch ($method) {
 
                 break;
 
+                case "userSearch":
+                    
+                    $adminCheck = $db->prepare("SELECT IsAdmin FROM Users WHERE ID = :uid LIMIT 1");
+                    $adminCheck->execute([":uid"=> $userId]);
+                    $currentUser = $adminCheck->fetch();
+
+                    if(!$currentUser || (int) $currentUser["IsAdmin"] !== 1){
+
+                        respond(403, ['error' => 'Admin access required for user search']);
+
+                    }
+
+                    $search = isset($_GET['q'])  ? trim($_GET['q'])  : (isset($_GET['search']) ? trim($_GET['search']) : null);
+
+                    if($search !== null && $search !== ''){
+
+                        $like = '%' . $search . '%';
+                        $stmt = $db->prepare("SELECT ID as id,
+                                              FirstName as firstName,
+                                              LastName as lastName,
+                                              Login as login,
+                                              IsAdmin as isAdmin,
+                                              IsEnabled as isEnabled
+                                              FROM Users
+                                              WHERE (CONCAT(FirstName, ' ', LastName) LIKE :searchName) OR (Login LIKE :searchLogin)
+                                              ORDER BY FirstName, LastName");
+                        $stmt->execute([':searchName' => $like, ':searchLogin' => $like]);
+
+                        $rows = $stmt->fetchAll();
+
+                        if(empty($rows)){
+
+                            respond(200, ['users' => [], 'error' => 'No Records Found']);
+ 
+                        }
+
+                        respond(200, ['users' => $rows, 'error' => '']);
+    
+                    }
+                    else{
+
+                        $stmt = $db->prepare("SELECT ID as id,
+                              FirstName as firstName,
+                              LastName as lastName,
+                              Login as login,
+                              IsAdmin as isAdmin,
+                              IsEnabled as isEnabled
+                              FROM Users
+                              ORDER BY FirstName, LastName");
+
+                        $stmt->execute();
+
+                        $rows = $stmt->fetchAll();
+
+                        if(empty($rows)){
+
+                            respond(200, ['users' => [], 'error' => 'No Records Found']);
+ 
+                        }
+
+                        respond(200, ['users' => $rows, 'error' => '']);
+
+                    }
+
+                    break;
+
         }
 
-}
-
-/*
- *
- *
- *ANYTHING BELOW THIS LINE IS FROM THE ORIGINAL COLORS API, WHICH IS
- *FOR REFERENCE ONLY. IT IS NOT PART OF THE NEW AUTHENTICATED API.
- *
- *
- */
-
-switch ($method) {
-
-    // ── GET: search, list, or single color ──────────────────
-    case 'GET':
-        $id     = isset($_GET['id']) ? (int) $_GET['id'] : null;
-        $search = isset($_GET['q'])  ? trim($_GET['q'])  : (isset($_GET['search']) ? trim($_GET['search']) : null);
-
-        // Single color by ID
-        if ($id) {
-            $stmt = $db->prepare('SELECT ID as id, Name as name, UserID as user_id FROM Colors WHERE ID = :id AND UserID = :uid LIMIT 1');
-            $stmt->execute([':id' => $id, ':uid' => $userId]);
-            $color = $stmt->fetch();
-            if (!$color) {
-                respond(404, ['error' => 'Color not found']);
-            }
-            respond(200, $color);
-        }
-        /*SELECT ID as id, FirstName as firstName, LastName as lastName
-        FROM Users
-        WHERE CONCAT(FirstName, ' ', LastName) LIKE :search*/
-        // Search colors (partial match)
-        if ($search !== null && $search !== '') {
-            $like = '%' . $search . '%';
-            $stmt = $db->prepare('SELECT ID as id, Name as name FROM Colors WHERE UserID = :uid AND Name LIKE :q ORDER BY Name');
-            $stmt->execute([':uid' => $userId, ':q' => $like]);
-            $rows = $stmt->fetchAll();
-            $results = array_column($rows, 'name');
-            if (empty($results)) {
-                respond(200, ['results' => [], 'colors' => [], 'error' => 'No Records Found']);
-            }
-            respond(200, ['results' => $results, 'colors' => $rows, 'error' => '']);
-        }
-
-        // List all colors
-        $stmt = $db->prepare('SELECT ID as id, Name as name FROM Colors WHERE UserID = :uid ORDER BY Name');
-        $stmt->execute([':uid' => $userId]);
-        $rows = $stmt->fetchAll();
-        $results = array_column($rows, 'name');
-        if (empty($results)) {
-            respond(200, ['results' => [], 'colors' => [], 'error' => 'No Records Found']);
-        }
-        respond(200, ['results' => $results, 'colors' => $rows, 'error' => '']);
         break;
 
-    // ── POST: create color ───────────────────────────────────
-    case 'POST':
-        $body  = getRequestBody();
-        $color = clean($body['color'] ?? $body['name'] ?? '');
-        if (!$color) {
-            respond(400, ['error' => 'Color name is required']);
-        }
-
-        $stmt = $db->prepare('INSERT INTO Colors (UserID, Name) VALUES (:uid, :name)');
-        $stmt->execute([':uid' => $userId, ':name' => $color]);
-
-        respond(201, [
-            'message' => 'Color created',
-            'id'      => (int) $db->lastInsertId(),
-            'error'   => ''
-        ]);
-        break;
-
-    // ── PUT: update color ─────────────────────────────────────
-    case 'PUT':
-        $id = isset($_GET['id']) ? (int) $_GET['id'] : 0;
-        if (!$id) {
-            respond(400, ['error' => 'Color ID is required — use ?id=']);
-        }
-
-        $check = $db->prepare('SELECT ID FROM Colors WHERE ID = :id AND UserID = :uid LIMIT 1');
-        $check->execute([':id' => $id, ':uid' => $userId]);
-        if (!$check->fetch()) {
-            respond(404, ['error' => 'Color not found']);
-        }
-
-        $body  = getRequestBody();
-        $color = clean($body['color'] ?? $body['name'] ?? '');
-        if (!$color) {
-            respond(400, ['error' => 'Color name is required']);
-        }
-
-        $stmt = $db->prepare('UPDATE Colors SET Name = :name WHERE ID = :id AND UserID = :uid');
-        $stmt->execute([':name' => $color, ':id' => $id, ':uid' => $userId]);
-
-        respond(200, ['message' => 'Color updated', 'error' => '']);
-        break;
-
-    // ── DELETE: delete color ──────────────────────────────────
-    case 'DELETE':
-        $id   = isset($_GET['id']) ? (int) $_GET['id'] : 0;
-        $name = isset($_GET['name']) ? clean($_GET['name']) : '';
-
-        if ($id > 0) {
-            $stmt = $db->prepare('DELETE FROM Colors WHERE ID = :id AND UserID = :uid');
-            $stmt->execute([':id' => $id, ':uid' => $userId]);
-        } elseif ($name !== '') {
-            $stmt = $db->prepare('DELETE FROM Colors WHERE Name = :name AND UserID = :uid LIMIT 1');
-            $stmt->execute([':name' => $name, ':uid' => $userId]);
-        } else {
-            respond(400, ['error' => 'Color ID or Name is required — use ?id= or ?name=']);
-        }
-
-        if ($stmt->rowCount() === 0) {
-            respond(404, ['error' => 'Color not found']);
-        }
-
-        respond(200, ['message' => 'Color deleted', 'error' => '']);
-        break;
-
-    default:
-        respond(405, ['error' => 'Method not allowed']);
 }
