@@ -1,16 +1,40 @@
 <?php
-// ============================================================
-//  api/index.php — Unified Colors Manager RESTful API
-//
-//  GET    /api/index.php?ping=1   — status ping health check
-//  POST   /api/index.php (login)  — authenticate user
-//  GET    /api/index.php          — list all colors for user
-//  GET    /api/index.php?q=term   — partial search colors
-//  GET    /api/index.php?id=1     — get single color by ID
-//  POST   /api/index.php (color)  — create new color
-//  PUT    /api/index.php?id=1     — update color by ID
-//  DELETE /api/index.php?id=1     — delete color by ID
-// ============================================================
+
+/*
+====================================================
+25. QUICK HANDOFF FOR API TEAM
+====================================================
+Please implement these routes/actions to match the current frontend:
+POST
+- [no action] = login
+- ?action=register
+- ?action=contactAdd
+GET
+- ?action=contactSearch
+- ?action=userSearch
+PUT
+- ?action=contactSave&id=ID
+- ?action=userDisable&id=ID
+- ?action=makeAdmin&id=ID
+- ?action=changePassword&id=ID
+DELETE
+- ?action=contactDel&id=ID
+Login must return:
+- id
+- firstName
+- lastName
+- isAdmin
+- isEnabled
+Registration should create:
+- isAdmin = 0
+- isEnabled = 1
+Authenticated requests currently send:
+- Authorization: Bearer USER_ID
+- X-User-Id: USER_ID
+Admin endpoints must verify administrator privileges server-side.
+Contact endpoints must verify contact ownership server-side.
+*/
+
 
 require_once __DIR__ . '/config/db.php';
 require_once __DIR__ . '/config/helpers.php';
@@ -302,6 +326,69 @@ switch ($method) {
 
         }
 
-        break;
+    case "POST":
+
+        switch($action){
+ 
+            case "contactAdd":
+
+                $body = getRequestBody();
+
+                $requiredFields = ['firstName', 'lastName', 'nickname', 'phone', 'email', 'address'];
+
+                foreach ($requiredFields as $currentField){
+
+                    if(!isset($body[$currentField]) || clean($body[$currentField]) === ''){
+
+                        respond(400, ['error' => $currentField . ' is required']);
+
+                    }
+
+                }
+
+                $firstName = clean($body['firstName']);
+                $lastName = clean($body['lastName']);
+                $nickname = isset($body['nickname']) ? clean($body['nickname']) : null;
+                $phone = isset($body['phone']) ? clean($body['phone']) : null;
+                $email = isset($body['email']) ? clean($body['email']) : null;
+                $address = isset($body['address']) ? clean($body['address']) : null;
+                $profilePic = isset($body['profilePic']) ? clean($body['profilePic']) : null;
+
+                if(!$firstName || !$lastName){
+                    
+                    respond(400, ['error' => 'First and last name cannot be empty']);
+
+                }
+
+                $stmt = $db->prepare("INSERT INTO Contacts
+                                      (FirstName,
+                                      LastName,
+                                      Nickname,
+                                      Phone,
+                                      Email,
+                                      Address,
+                                      ProfilePic,
+                                      UserID)
+                                      VALUES
+                                      (:firstName,
+                                      :lastName,
+                                      :nickname,
+                                      :phone,
+                                      :email,
+                                      :address,
+                                      :profilePic,
+                                      :uid)");
+
+                $stmt->execute([':firstName' => $firstName, ':lastName' => $lastName,
+                                 ':nickname' => $nickname, ':phone' => $phone,
+                                 ':email' => $email, ':address' => $address,
+                                 ':profilePic' => $profilePic, ':uid' => $userId]);
+
+                respond(201, ['message' => 'Contact successfully created', 'id' => (int) $db->lastInsertId(), 'error' => '']);
+                
+                break;
+
+        }
+
 
 }
