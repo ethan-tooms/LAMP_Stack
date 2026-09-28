@@ -81,7 +81,7 @@ function executeGetCall($action, $db, $userId)
                     ':uid' => $userId,
                     ':searchName' => $like,
                     ':searchNickname' => $like,
-                    'searchEmail' => $like
+                    ':searchEmail' => $like
                 ]);
 
             } else {
