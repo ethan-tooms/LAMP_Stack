@@ -71,6 +71,7 @@ function executeGetCall($action, $db, $userId)
                     WHERE (
                         CONCAT(FirstName, ' ', LastName) LIKE :searchName
                         OR Nickname LIKE :searchNickname
+                        OR Email LIKE : searchEmail
                     )
                     AND UserID = :uid
                     ORDER BY FirstName, LastName
@@ -79,7 +80,8 @@ function executeGetCall($action, $db, $userId)
                 $stmt->execute([
                     ':uid' => $userId,
                     ':searchName' => $like,
-                    ':searchNickname' => $like
+                    ':searchNickname' => $like,
+                    'searchEmail' => $like
                 ]);
 
             } else {
