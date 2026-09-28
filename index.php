@@ -39,6 +39,11 @@ Contact endpoints must verify contact ownership server-side.
 require_once __DIR__ . '/config/db.php';
 require_once __DIR__ . '/config/helpers.php';
 
+require_once __DIR__ . '/php/get.php';
+require_once __DIR__ . '/php/post.php';
+require_once __DIR__ . '/php/put.php';
+require_once __DIR__ . '/php/delete.php';
+
 setCORSHeaders();
 
 $method = $_SERVER['REQUEST_METHOD'];
@@ -145,250 +150,24 @@ $userId = requireAuth();
 //switch method to determine which action to take (GET, POST, PUT, DELETE) THEN by "?action=???"
 switch ($method) {
 
-    case "GET":
+    case 'GET':
+        executeGetCall($action, $db, $userId);
+        break;
 
-        switch($action){
+    case 'POST':
+        executePostCall($action, $db, $userId);
+        break;
 
-            //?action=getContactByID
-            case 'getContactByID':
+    case 'PUT':
+        executePutCall($action, $db, $userId);
+        break;
 
-                $id = isset($_GET['id']) ? (int) $_GET['id'] : null;
+    case 'DELETE':
+        executeDeleteCall($action, $db, $userId);
+        break;
 
-                // Single contact by ID
-                if($id){
-
-                    $stmt = $db->prepare("SELECT ID as id,
-                                          FirstName as firstName,
-                                          LastName as lastName,
-                                          Email as email,
-                                          Nickname as nickname,
-                                          Phone as phone,
-                                          Address as address,
-                                          ProfilePic as profilePic,
-                                          UserID as user_id
-                                          FROM Contacts
-                                          WHERE ID = :id AND UserID = :uid LIMIT 1");
-
-                    $stmt->execute([':id' => $id, ':uid' => $userId]);
-                    $contact = $stmt->fetch(); //$contact["nane"] $contact["Name"]
-                    if(!$contact){
-                        respond(404, ['error' => 'Contact not found']);
-                    }
-
-                    respond(200, $contact);
-
-                }
-
-                if(!$id){
-
-                    //when ?id=??? is not included, returns an error
-                    respond(400, ['error' => 'ID is required']);
-
-                }
-
-                break;
-
-            //?action=contactSearch
-            case 'contactSearch':
-
-                $search = isset($_GET['q'])  ? trim($_GET['q'])  : (isset($_GET['search']) ? trim($_GET['search']) : null);
-
-                //partial search contacts by first name or last name or both. Otherwise, lists all contacts (TODO)
-                if ($search !== null && $search !== '') {
-
-                    $like = '%' . $search . '%';
-                    $stmt = $db->prepare("SELECT ID as id,
-                                          FirstName as firstName,
-                                          LastName as lastName,
-                                          Email as email,
-                                          Nickname as nickname,
-                                          Phone as phone,
-                                          Address as address,
-                                          ProfilePic as profilePic,
-                                          DateCreated as dateCreated,
-                                          DateUpdated as dateUpdated
-                                          FROM Contacts
-                                          WHERE (CONCAT(FirstName, ' ', LastName) LIKE :searchName OR Nickname LIKE :searchNickname) AND UserID = :uid
-                                          ORDER BY FirstName, LastName");
-                    $stmt->execute([':uid' => $userId, ':searchName' => $like, ':searchNickname' => $like]);
-                    $rows = $stmt->fetchAll();
-                    $results = [];
-                    foreach ($rows as $row) {
-                        $results[] = $row['firstName'] . ' ' . $row['lastName'];
-                    }
-
-                    if(empty($results)){
-                        respond(200, ['results' => [], 'contacts' => [], 'error' => 'No Records Found']);
-                    }
-
-                    respond(200, ['results' => $results, 'contacts' => $rows, 'error' => '']);
-
-                }
-                else{
-                    //if no search term is provided, return all contacts for the user
-                    $stmt = $db->prepare("SELECT ID as id,
-                                          FirstName as firstName,
-                                          LastName as lastName,
-                                          Email as email,
-                                          Nickname as nickname,
-                                          Phone as phone,
-                                          Address as address,
-                                          ProfilePic as profilePic,
-                                          DateCreated as dateCreated,
-                                          DateUpdated as dateUpdated
-                                          FROM Contacts
-                                          WHERE UserID = :uid
-                                          ORDER BY FirstName, LastName");
-
-                    $stmt->execute([':uid' => $userId]);
-                    $rows = $stmt->fetchAll();
-                    $results = [];
-                    foreach ($rows as $row) {
-                        $results[] = $row['firstName'] . ' ' . $row['lastName'];
-                    }
-
-                    if(empty($results)){
-                        respond(200, ['results' => [], 'contacts' => [], 'error' => 'No Records Found']);
-                    }
-
-                    respond(200, ['results' => $results, 'contacts' => $rows, 'error' => '']);
-
-
-                }
-
-                break;
-
-                case "userSearch":
-                    
-                    $adminCheck = $db->prepare("SELECT IsAdmin FROM Users WHERE ID = :uid LIMIT 1");
-                    $adminCheck->execute([":uid"=> $userId]);
-                    $currentUser = $adminCheck->fetch();
-
-                    if(!$currentUser || (int) $currentUser["IsAdmin"] !== 1){
-
-                        respond(403, ['error' => 'Admin access required for user search']);
-
-                    }
-
-                    $search = isset($_GET['q'])  ? trim($_GET['q'])  : (isset($_GET['search']) ? trim($_GET['search']) : null);
-
-                    if($search !== null && $search !== ''){
-
-                        $like = '%' . $search . '%';
-                        $stmt = $db->prepare("SELECT ID as id,
-                                              FirstName as firstName,
-                                              LastName as lastName,
-                                              Login as login,
-                                              IsAdmin as isAdmin,
-                                              IsEnabled as isEnabled
-                                              FROM Users
-                                              WHERE (CONCAT(FirstName, ' ', LastName) LIKE :searchName) OR (Login LIKE :searchLogin)
-                                              ORDER BY FirstName, LastName");
-                        $stmt->execute([':searchName' => $like, ':searchLogin' => $like]);
-
-                        $rows = $stmt->fetchAll();
-
-                        if(empty($rows)){
-
-                            respond(200, ['users' => [], 'error' => 'No Records Found']);
- 
-                        }
-
-                        respond(200, ['users' => $rows, 'error' => '']);
-    
-                    }
-                    else{
-
-                        $stmt = $db->prepare("SELECT ID as id,
-                              FirstName as firstName,
-                              LastName as lastName,
-                              Login as login,
-                              IsAdmin as isAdmin,
-                              IsEnabled as isEnabled
-                              FROM Users
-                              ORDER BY FirstName, LastName");
-
-                        $stmt->execute();
-
-                        $rows = $stmt->fetchAll();
-
-                        if(empty($rows)){
-
-                            respond(200, ['users' => [], 'error' => 'No Records Found']);
- 
-                        }
-
-                        respond(200, ['users' => $rows, 'error' => '']);
-
-                    }
-
-                    break;
-
-        }
-
-    case "POST":
-
-        switch($action){
- 
-            case "contactAdd":
-
-                $body = getRequestBody();
-
-                $requiredFields = ['firstName', 'lastName', 'nickname', 'phone', 'email', 'address'];
-
-                foreach ($requiredFields as $currentField){
-
-                    if(!isset($body[$currentField]) || clean($body[$currentField]) === ''){
-
-                        respond(400, ['error' => $currentField . ' is required']);
-
-                    }
-
-                }
-
-                $firstName = clean($body['firstName']);
-                $lastName = clean($body['lastName']);
-                $nickname = isset($body['nickname']) ? clean($body['nickname']) : null;
-                $phone = isset($body['phone']) ? clean($body['phone']) : null;
-                $email = isset($body['email']) ? clean($body['email']) : null;
-                $address = isset($body['address']) ? clean($body['address']) : null;
-                $profilePic = isset($body['profilePic']) ? clean($body['profilePic']) : null;
-
-                if(!$firstName || !$lastName){
-                    
-                    respond(400, ['error' => 'First and last name cannot be empty']);
-
-                }
-
-                $stmt = $db->prepare("INSERT INTO Contacts
-                                      (FirstName,
-                                      LastName,
-                                      Nickname,
-                                      Phone,
-                                      Email,
-                                      Address,
-                                      ProfilePic,
-                                      UserID)
-                                      VALUES
-                                      (:firstName,
-                                      :lastName,
-                                      :nickname,
-                                      :phone,
-                                      :email,
-                                      :address,
-                                      :profilePic,
-                                      :uid)");
-
-                $stmt->execute([':firstName' => $firstName, ':lastName' => $lastName,
-                                 ':nickname' => $nickname, ':phone' => $phone,
-                                 ':email' => $email, ':address' => $address,
-                                 ':profilePic' => $profilePic, ':uid' => $userId]);
-
-                respond(201, ['message' => 'Contact successfully created', 'id' => (int) $db->lastInsertId(), 'error' => '']);
-                
-                break;
-
-        }
-
-
+    default:
+        respond(405, [
+            'error' => 'Method not allowed'
+        ]);
 }
