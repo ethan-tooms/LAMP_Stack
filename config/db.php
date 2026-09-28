@@ -22,7 +22,7 @@ function getDB() {
         $user    = getenv('DB_USER')     ?: 'ContactsAppUser';
         $pass    = getenv('DB_PASSWORD') !== false 
                      ? getenv('DB_PASSWORD') 
-                     : (getenv('DB_PASS') !== false ? getenv('DB_PASS') : '');
+                     : (getenv('DB_PASS') !== false ? getenv('DB_PASS') : 'AvengersAssemble!');
         $charset = getenv('DB_CHARSET')  ?: 'utf8mb4';
         $port    = getenv('DB_PORT')     ?: 3306;
 
