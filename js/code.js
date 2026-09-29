@@ -26,7 +26,7 @@ function doLogin() {
     login: login, 
     password: password
   });
-  let url = loginUrlBase;
+  let url = loginUrlBase + "?action=login";
 
   let xhr = new XMLHttpRequest();
   xhr.open("POST", url, true);
