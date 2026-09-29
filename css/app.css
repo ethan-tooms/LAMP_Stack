@@ -1,46 +1,77 @@
 /* ============================================================
    Shared tokens — mirrors css/login.css so every page feels
-   like one product. Loaded on register.html, dashboard.html
-   and admin.html, alongside Bootstrap.
+   like one comic-book universe. Loaded on register.html,
+   dashboard.html and admin.html, alongside Bootstrap.
+
+   Palette: Gotham midnight, hero gold, crimson accent.
    ============================================================ */
 :root {
-  --bg: #f4f5fb;
-  --surface: #ffffff;
-  --text: #14162b;
-  --muted: #5d6280;
-  --border: #dcdff0;
-  --field-bg: #f8f9fe;
-  --accent: #4f46e5;
-  --accent-hover: #4338ca;
-  --accent-soft: rgba(79, 70, 229, .16);
-  --danger: #b42340;
-  --danger-bg: #fdeef1;
-  --danger-border: #f5c2cd;
-  --success: #157347;
-  --success-bg: #e9f7ef;
-  --success-border: #bfe6cf;
-  --shadow: 0 20px 50px -20px rgba(45, 40, 120, .25), 0 6px 16px -10px rgba(45, 40, 120, .15);
+  --bg: #05070f;
+  --bg-2: #0a1024;
+  --surface: #101a33;
+  --surface-soft: #16223f;
+  --text: #e9efff;
+  --muted: #93a1c9;
+  --border: #26365f;
+  --field-bg: #0b142b;
+
+  /* Hero accents */
+  --accent: #f7c948;          /* utility-belt gold */
+  --accent-hover: #ffdb70;
+  --accent-ink: #0a1024;      /* text that sits on gold */
+  --accent-soft: rgba(247, 201, 72, .18);
+  --link: #ffd76a;
+  --heading: #f7c948;      /* panel headings; gold reads well on midnight */
+  --hero-red: #e23b3b;
+  --hero-blue: #3b6bff;
+
+  --danger: #ff7285;
+  --danger-bg: rgba(226, 59, 59, .14);
+  --danger-border: rgba(226, 59, 59, .45);
+  --success: #4ade80;
+  --success-bg: rgba(74, 222, 128, .12);
+  --success-border: rgba(74, 222, 128, .4);
+  --warning: #fbbf24;
+
+  --halftone: rgba(247, 201, 72, .07);
+  --shadow: 0 26px 60px -26px rgba(0, 0, 0, .9), 0 0 0 1px rgba(247, 201, 72, .1);
+
   --font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-display: "Russo One", "Arial Black", var(--font);
+  --font-comic: "Bangers", "Impact", var(--font-display);
 }
 
-@media (prefers-color-scheme: dark) {
+/* Daylight patrol — same heroes, brighter city. */
+@media (prefers-color-scheme: light) {
   :root {
-    --bg: #0d0e1b;
-    --surface: #161829;
-    --text: #eceefb;
-    --muted: #9a9fc2;
-    --border: #2b2e4a;
-    --field-bg: #1c1f35;
-    --accent: #7c74ff;
-    --accent-hover: #918aff;
-    --accent-soft: rgba(124, 116, 255, .25);
-    --danger: #ff8fa5;
-    --danger-bg: #2c1420;
-    --danger-border: #5a2436;
-    --success: #6fd99a;
-    --success-bg: #123023;
-    --success-border: #1f4a35;
-    --shadow: 0 20px 50px -20px rgba(0, 0, 0, .6), 0 6px 16px -10px rgba(0, 0, 0, .4);
+    --bg: #ece9dd;
+    --bg-2: #dbd8ca;
+    --surface: #fffdf7;
+    --surface-soft: #f4f0e3;
+    --text: #0b1024;
+    --muted: #4c5578;
+    --border: #26304f;
+    --field-bg: #fffdf7;
+
+    --accent: #e8b81c;
+    --accent-hover: #d6a712;
+    --accent-ink: #14192f;
+    --accent-soft: rgba(232, 184, 28, .28);
+    --link: #1d3fa8;
+    --heading: #1a2340;    /* gold is unreadable on newsprint, so go ink */
+    --hero-red: #c81e2b;
+    --hero-blue: #1d4ed8;
+
+    --danger: #a8182f;
+    --danger-bg: #fdeaed;
+    --danger-border: #e6a8b3;
+    --success: #14663f;
+    --success-bg: #e8f6ee;
+    --success-border: #b6ddc6;
+    --warning: #8a5a00;
+
+    --halftone: rgba(11, 16, 36, .10);
+    --shadow: 6px 6px 0 rgba(11, 16, 36, .8);
   }
 }
 
@@ -51,40 +82,74 @@ body {
   margin: 0;
   font-family: var(--font);
   color: var(--text);
-  background: var(--bg);
+  background:
+    radial-gradient(44rem 26rem at 50% -8%, var(--accent-soft), transparent 62%),
+    radial-gradient(var(--halftone) 1px, transparent 1.3px) 0 0 / 13px 13px,
+    linear-gradient(175deg, var(--bg-2), var(--bg) 60%);
+  background-attachment: fixed;
   -webkit-font-smoothing: antialiased;
 }
 
-a { color: var(--accent); font-weight: 600; text-decoration: none; }
+a { color: var(--link); font-weight: 700; text-decoration: none; }
 a:hover { text-decoration: underline; }
 
 /* ── Topbar (dashboard + admin) ─────────────────────── */
 .topbar {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
   padding: .9rem clamp(16px, 4vw, 40px);
-  background: linear-gradient(120deg, #4338ca 0%, #6d3fe0 55%, #c026d3 120%);
   color: #fff;
-  box-shadow: var(--shadow);
+  background:
+    repeating-linear-gradient(-22deg, rgba(255, 255, 255, .05) 0 2px, transparent 2px 16px),
+    radial-gradient(24rem 14rem at 12% -40%, rgba(247, 201, 72, .3), transparent 65%),
+    linear-gradient(120deg, #0a1024 0%, #142a63 58%, #3a1030 120%);
+  border-bottom: 3px solid var(--accent);
+  box-shadow: 0 10px 30px -18px rgba(0, 0, 0, .9);
 }
 .topbar .logo {
   display: inline-flex;
   align-items: center;
   gap: .6rem;
-  font-weight: 700;
-  font-size: 1.05rem;
+  font-family: var(--font-comic);
+  font-size: 1.45rem;
+  font-weight: 400;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--accent);
+  text-shadow: 2px 2px 0 rgba(0, 0, 0, .55);
 }
 .topbar .logo-mark {
   display: grid;
   place-items: center;
-  width: 2.1rem; height: 2.1rem;
-  border-radius: 10px;
-  background: rgba(255, 255, 255, .18);
-  border: 1px solid rgba(255, 255, 255, .3);
+  width: 2.2rem; height: 2.2rem;
+  color: var(--accent);
+  background: rgba(247, 201, 72, .14);
+  border: 2px solid var(--accent);
+  border-radius: 7px;
+  box-shadow: 0 0 16px -4px var(--accent);
 }
-.topbar .logo-mark svg { width: 1.15rem; height: 1.15rem; }
+.topbar .logo-mark svg { width: 1.2rem; height: 1.2rem; }
+
+/* "Admin" chip beside the wordmark. */
+.hero-badge {
+  display: inline-block;
+  margin-left: .2rem;
+  padding: .2rem .55rem;
+  font-family: var(--font-display);
+  font-size: .62rem;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: #fff;
+  background: var(--hero-red);
+  border: 2px solid rgba(255, 255, 255, .85);
+  border-radius: 5px;
+  transform: rotate(-3deg);
+  vertical-align: middle;
+}
+
 .topbar .who {
   display: flex;
   align-items: center;
@@ -92,43 +157,78 @@ a:hover { text-decoration: underline; }
   font-size: .92rem;
   color: rgba(255, 255, 255, .9);
 }
-.topbar .who .text-primary { color: #d9d4ff !important; }
+.topbar .who .text-primary { color: var(--accent) !important; }
 .topbar .who .text-white { color: #fff !important; }
 .topbar .logout-btn {
-  border: 1px solid rgba(255, 255, 255, .35);
-  background: rgba(255, 255, 255, .1);
-  color: #fff;
-  font-weight: 600;
-  font-size: .85rem;
+  font-family: var(--font-display);
+  font-size: .72rem;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--accent);
+  background: rgba(247, 201, 72, .12);
+  border: 2px solid var(--accent);
   padding: .45rem .9rem;
-  border-radius: 9px;
+  border-radius: 7px;
   cursor: pointer;
-  transition: background .15s;
+  transition: background .15s, color .15s;
 }
-.topbar .logout-btn:hover { background: rgba(255, 255, 255, .22); }
+.topbar .logout-btn:hover { background: var(--accent); color: var(--accent-ink); }
 
 /* ── Page shell ─────────────────────────────────────── */
 .page {
-  max-width: 880px;
+  max-width: 920px;
   margin: 0 auto;
   padding: clamp(20px, 4vw, 40px) clamp(16px, 4vw, 40px) 4rem;
   display: grid;
   gap: 1.5rem;
 }
-.page h1 { font-size: 1.5rem; letter-spacing: -.02em; margin: 0 0 .2rem; }
+.page h1 {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  letter-spacing: .01em;
+  text-transform: uppercase;
+  margin: 0 0 .5rem;
+}
+.page h1::after {
+  content: "";
+  display: block;
+  width: 3.2rem;
+  height: 4px;
+  margin-top: .5rem;
+  background: linear-gradient(90deg, var(--accent), var(--hero-red));
+  border-radius: 2px;
+}
 .page .subtitle { color: var(--muted); margin: 0; }
 
+/* ── Comic panels ───────────────────────────────────── */
 .card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 18px;
+  position: relative;
+  background:
+    radial-gradient(var(--halftone) 1px, transparent 1.3px) 0 0 / 14px 14px,
+    var(--surface);
+  border: 3px solid var(--accent);
+  border-radius: 6px;
   padding: clamp(18px, 3vw, 28px);
   box-shadow: var(--shadow);
 }
+.card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border: 1px solid rgba(247, 201, 72, .3);
+  border-radius: 4px;
+  pointer-events: none;
+}
+/* Bootstrap also ships a `.card` class, which makes this a flex column —
+   so a loose button child would otherwise stretch edge to edge. */
+.card > .btn { align-self: flex-start; }
 .card h2 {
-  font-size: 1.05rem;
+  font-family: var(--font-display);
+  font-size: .95rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--heading);
   margin: 0 0 1rem;
-  letter-spacing: -.01em;
 }
 
 /* ── Search bar ─────────────────────────────────────── */
@@ -143,6 +243,7 @@ a:hover { text-decoration: underline; }
   display: block;
   min-height: 1.2rem;
   font-size: .85rem;
+  font-weight: 600;
   color: var(--muted);
   margin-bottom: .75rem;
 }
@@ -150,36 +251,122 @@ a:hover { text-decoration: underline; }
 /* ── Bootstrap re-skin so generated markup matches the brand ── */
 .form-control {
   background: var(--field-bg);
-  border: 1px solid var(--border);
+  border: 2px solid var(--border);
   color: var(--text);
-  border-radius: 10px;
+  border-radius: 8px;
 }
+.form-control::placeholder { color: var(--muted); opacity: .75; }
 .form-control:focus {
   background: var(--surface);
   border-color: var(--accent);
   box-shadow: 0 0 0 4px var(--accent-soft);
   color: var(--text);
 }
-.form-control:disabled { opacity: .75; }
+.form-control:disabled {
+  background: var(--surface-soft);
+  color: var(--text);
+  opacity: .9;
+}
 
-.btn { border-radius: 9px; font-weight: 600; font-size: .85rem; }
-.btn-primary { background: var(--accent); border-color: var(--accent); }
-.btn-primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
-.btn-success { background: var(--success); border-color: var(--success); }
-.btn-danger { background: var(--danger); border-color: var(--danger); }
-.btn-warning { color: #4a3300; }
-.btn-secondary { background: var(--muted); border-color: var(--muted); }
+.btn {
+  font-family: var(--font-display);
+  font-size: .72rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  border-width: 2px;
+  border-radius: 7px;
+  padding: .5rem .9rem;
+  box-shadow: 0 3px 0 rgba(0, 0, 0, .4);
+  transition: transform .12s, box-shadow .12s, filter .15s;
+}
+.btn:hover  { transform: translateY(-1px); box-shadow: 0 4px 0 rgba(0, 0, 0, .4); filter: brightness(1.06); }
+.btn:active { transform: translateY(2px); box-shadow: 0 1px 0 rgba(0, 0, 0, .4); }
+.btn:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.btn-sm { font-size: .66rem; padding: .4rem .7rem; }
+
+.btn-primary,
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:active {
+  background: var(--accent);
+  border-color: var(--accent-ink);
+  color: var(--accent-ink);
+}
+.btn-success,
+.btn-success:hover,
+.btn-success:focus,
+.btn-success:active {
+  background: var(--success);
+  border-color: var(--accent-ink);
+  color: var(--accent-ink);
+}
+.btn-danger,
+.btn-danger:hover,
+.btn-danger:focus,
+.btn-danger:active {
+  background: var(--hero-red);
+  border-color: var(--accent-ink);
+  color: #fff;
+}
+.btn-warning,
+.btn-warning:hover,
+.btn-warning:focus,
+.btn-warning:active {
+  background: var(--hero-blue);
+  border-color: var(--accent-ink);
+  color: #fff;
+}
+.btn-secondary,
+.btn-secondary:hover,
+.btn-secondary:focus,
+.btn-secondary:active {
+  background: var(--surface-soft);
+  border-color: var(--border);
+  color: var(--text);
+}
 
 .border { border-color: var(--border) !important; }
-.rounded { border-radius: 14px !important; }
+.rounded { border-radius: 8px !important; }
 
+/* ── Result rows (markup built in js/code.js) ───────── */
 .contact-item, .user-item {
-  background: var(--field-bg);
-  display: grid;
-  gap: .5rem;
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .55rem;
+  background: var(--surface-soft);
+  border: 2px solid var(--border) !important;
+  border-left: 5px solid var(--accent) !important;
 }
-.user-item strong { font-size: 1rem; }
-.user-item div { color: var(--muted); font-size: .9rem; }
+.contact-item .form-control {
+  flex: 1 1 190px;
+  max-width: 18rem;
+  margin-bottom: 0 !important;
+}
+.contact-item .btn, .user-item .btn { flex: 0 0 auto; }
+
+.user-item strong {
+  flex: 1 1 100%;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 1rem;
+  letter-spacing: .02em;
+  color: var(--heading);
+}
+/* The three read-only facts render as dossier chips. */
+.user-item > div:not([id^="password-"]) {
+  flex: 0 0 auto;
+  padding: .2rem .55rem;
+  font-size: .78rem;
+  color: var(--muted);
+  background: var(--field-bg);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+}
+.user-item > div[id^="password-"] { flex: 1 1 100%; }
+.user-item > div[id^="password-"]:empty { display: none; }
+.user-item > div[id^="password-"] .form-control { margin-bottom: .5rem !important; }
 
 /* ── Inline status / result messages ───────────────────
    code.js sets innerHTML + className directly on these,
@@ -189,6 +376,7 @@ a:hover { text-decoration: underline; }
 .text-success-wcag { color: var(--success); }
 .text-danger-wcag, .text-danger-scag { color: var(--danger); }
 .text-secondary-contrast { color: var(--muted); }
+.text-warning { color: var(--warning) !important; }
 
 .reg-msg, #contactAddResult, #contactSearchResult, #userSearchResult {
   display: block;
@@ -201,6 +389,7 @@ a:hover { text-decoration: underline; }
 #loginResult {
   color: var(--danger);
   font-size: .85rem;
+  font-weight: 600;
 }
 #loginResult:empty { display: none; }
 
