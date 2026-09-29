@@ -125,6 +125,57 @@ function executePutCall($action, $db, $userId)
                 
                 break;
 
+            case "userEnable":
+
+                $adminCheck = $db->prepare("SELECT IsAdmin FROM Users WHERE ID = :uid LIMIT 1");
+                $adminCheck->execute([":uid"=> $userId]);
+                $currentUser = $adminCheck->fetch();
+
+                if(!$currentUser || (int) $currentUser["IsAdmin"] !== 1){
+
+                    respond(403, ['error' => 'Admin access required for user enable']);
+
+                }
+
+                $id = isset($_GET['id']) ? (int) $_GET['id'] : 0;
+
+                if(!$id){
+
+                    respond(400, ['error' => 'User ID is required for user enable']);
+
+                }
+
+                if($id === $userId){
+
+                    respond(400, ['error' => 'You cannot enable yourself']);
+
+                }
+
+                $checkID = $db->prepare("SELECT ID FROM Users WHERE ID = :id LIMIT 1");
+                $checkID->execute([':id' => $id]);
+                $targetUser = $checkID->fetch();
+
+                if (!$targetUser) {
+
+                    respond(404, ['error' => 'User not found']);
+
+                }
+
+                $dateUpdated = date("Y-m-d");
+
+                $stmt = $db->prepare("UPDATE Users SET
+                                      IsEnabled = :isEnabled,
+                                      DateUpdated = :dateUpdated
+                                      WHERE ID = :id");
+
+
+
+                $stmt->execute([':id' => $id, ':isEnabled' => 1, ':dateUpdated' => $dateUpdated]);
+
+                respond(200, ['message' => 'User updated', 'error' => '']);
+
+                break;
+
             case "makeAdmin":
 
                 $adminCheck = $db->prepare("SELECT IsAdmin FROM Users WHERE ID = :uid LIMIT 1");
@@ -168,6 +219,57 @@ function executePutCall($action, $db, $userId)
 
                 respond(200, ['message' => 'User updated', 'error' => '']);
                 
+                break;
+            
+            case "disableAdmin":
+
+                $adminCheck = $db->prepare("SELECT IsAdmin FROM Users WHERE ID = :uid LIMIT 1");
+                $adminCheck->execute([":uid"=> $userId]);
+                $currentUser = $adminCheck->fetch();
+
+                if(!$currentUser || (int) $currentUser["IsAdmin"] !== 1){
+
+                    respond(403, ['error' => 'Admin access required for admin disabling']);
+
+                }
+
+                $id = isset($_GET['id']) ? (int) $_GET['id'] : 0;
+
+                if(!$id){
+
+                    respond(400, ['error' => 'User ID is required for admin disabling']);
+
+                }
+
+                if($id === $userId){
+
+                    respond(400, ['error' => 'You cannot disable yourself']);
+
+                }
+
+                $checkID = $db->prepare("SELECT ID FROM Users WHERE ID = :id LIMIT 1");
+                $checkID->execute([':id' => $id]);
+                $targetUser = $checkID->fetch();
+
+                if (!$targetUser) {
+
+                    respond(404, ['error' => 'User not found']);
+
+                }
+
+                $dateUpdated = date("Y-m-d");
+
+                $stmt = $db->prepare("UPDATE Users SET
+                                      IsAdmin = :isAdmin,
+                                      DateUpdated = :dateUpdated
+                                      WHERE ID = :id");
+
+
+
+                $stmt->execute([':id' => $id, ':isAdmin' => 0, ':dateUpdated' => $dateUpdated]);
+
+                respond(200, ['message' => 'User updated', 'error' => '']);
+
                 break;
 
             case "changePassword":
