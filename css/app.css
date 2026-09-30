@@ -203,6 +203,12 @@ a:hover { text-decoration: underline; }
 /* ── Comic panels ───────────────────────────────────── */
 .card {
   position: relative;
+  /* Bootstrap's own .card component sets color: var(--bs-body-color),
+     which defaults to near-black and otherwise overrides our theme for
+     any child that doesn't have its own explicit color rule (e.g. the
+     plain <div> fields code.js builds) - explicit color here reasserts
+     the theme's readable text color for everything inside a card. */
+  color: var(--text);
   background:
     radial-gradient(var(--halftone) 1px, transparent 1.3px) 0 0 / 14px 14px,
     var(--surface);
@@ -335,6 +341,7 @@ a:hover { text-decoration: underline; }
   flex-wrap: wrap;
   align-items: center;
   gap: .55rem;
+  color: var(--text);
   background: var(--surface-soft);
   border: 2px solid var(--border) !important;
   border-left: 5px solid var(--accent) !important;
@@ -346,6 +353,17 @@ a:hover { text-decoration: underline; }
 }
 .contact-item .btn, .user-item .btn { flex: 0 0 auto; }
 
+/* Nested "View Contacts" list inside an admin user-item needs its own
+   visual identity so it doesn't blend into the parent user card. */
+.user-item .contact-item {
+  background: var(--surface);
+  border: 2px solid var(--border) !important;
+  border-left: 4px solid var(--hero-blue) !important;
+  padding: .6rem .75rem;
+  margin-left: .25rem;
+  margin-top: .35rem;
+}
+
 .user-item strong {
   flex: 1 1 100%;
   font-family: var(--font-display);
@@ -354,8 +372,11 @@ a:hover { text-decoration: underline; }
   letter-spacing: .02em;
   color: var(--heading);
 }
-/* The three read-only facts render as dossier chips. */
-.user-item > div:not([id^="password-"]) {
+/* The three read-only facts render as dossier chips. Targeted by class
+   (not the old ":not([id^=password-])" catch-all, which also swept up
+   .button-row, the nested contacts panel, the avatar and the date line
+   into tiny pills and caused everything to overlap). */
+.user-item .fact-chip {
   flex: 0 0 auto;
   padding: .2rem .55rem;
   font-size: .78rem;
@@ -367,6 +388,65 @@ a:hover { text-decoration: underline; }
 .user-item > div[id^="password-"] { flex: 1 1 100%; }
 .user-item > div[id^="password-"]:empty { display: none; }
 .user-item > div[id^="password-"] .form-control { margin-bottom: .5rem !important; }
+
+/* ── Contact profile picture ────────────────────────────
+   Small circular avatar shown on contact cards. Falls back
+   to the inline default silhouette (see DEFAULT_PROFILE_PIC
+   in code.js) when a contact has no profilePic set. */
+.avatar-wrap {
+  flex: 0 0 auto;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid var(--border);
+  background: var(--field-bg);
+}
+.avatar-wrap-sm { width: 32px; height: 32px; }
+.contact-avatar {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* ── Click-to-upload avatar (edit mode / add-contact form) ──
+   The avatar circle itself becomes the picture picker - no more
+   separate profile-picture URL text field. .avatar-picker stacks
+   the circle above a small hint line; .avatar-wrap-editable marks
+   the circle clickable only while actually editable. */
+.avatar-picker {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .25rem;
+  flex: 0 0 auto;
+}
+.avatar-wrap-editable {
+  cursor: pointer;
+  transition: border-color .15s ease, box-shadow .15s ease;
+}
+.avatar-wrap-editable:hover {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+.avatar-hint {
+  font-size: .68rem;
+  color: var(--muted);
+  text-align: center;
+  line-height: 1.15;
+}
+
+/* ── Created/updated date line ──────────────────────────
+   A single compact line (not absolutely positioned, so it can
+   never overlap the card's other fields, however tight the card
+   is — e.g. the nested "View Contacts" list). Takes its own full
+   row since .contact-item/.user-item are flex-wrap containers. */
+.card-date-badge {
+  flex: 1 1 100%;
+  font-size: .72rem;
+  color: var(--muted);
+}
 
 /* ── Inline status / result messages ───────────────────
    code.js sets innerHTML + className directly on these,
@@ -398,6 +478,20 @@ a:hover { text-decoration: underline; }
   color: var(--muted);
   font-size: .9rem;
   font-style: italic;
+}
+
+.pagination-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .25rem;
+  flex-wrap: wrap;
+}
+
+.pagination-row .page-indicator {
+  font-family: var(--font);
+  font-size: .82rem;
+  color: var(--muted);
 }
 
 @media (prefers-reduced-motion: reduce) {
