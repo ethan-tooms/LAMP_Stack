@@ -60,7 +60,7 @@ function executePutCall($action, $db, $userId)
                 }
 
                 // Format as (305) 555 1234
-                $formattedPhone = sprintf(
+                $phone = sprintf(
                     '%s-%s-%s',
                     substr($digitsOnly, 0, 3),
                     substr($digitsOnly, 3, 3),
