@@ -47,7 +47,25 @@ function executePutCall($action, $db, $userId)
                 $address = isset($body['address']) ? clean($body['address']) : null;
                 $profilePic = isset($body['profilePic']) ? clean($body['profilePic']) : null;
                 $dateUpdated = date("Y-m-d");
+                if (!filter_var($email, FILTER_VALIDATE_EMAIL)){
+                    respond(404, ['error' => 'Invalid email format']);
+                    exit;
+                }
+                // Check and normalize number format in DB
+                $digitsOnly = preg_replace('/\D/', '', $phone);
 
+                if (strlen($digitsOnly) !== 10) {
+                    respond(422, ['error' => 'Invalid phone number, please use 10 digits']);
+                    exit;
+                }
+
+                // Format as (305) 555 1234
+                $formattedPhone = sprintf(
+                    '%s-%s-%s',
+                    substr($digitsOnly, 0, 3),
+                    substr($digitsOnly, 3, 3),
+                    substr($digitsOnly, 6, 4)
+                );
                 $stmt = $db->prepare("UPDATE Contacts SET
                                       FirstName = :firstName,
                                       LastName = :lastName,
