@@ -46,11 +46,19 @@
       <div id="contactList">
         <div class="empty-state"><i class="bi bi-hourglass-split me-1"></i>Loading your contacts…</div>
       </div>
+      <div id="contactPagination" class="pagination-row mt-2"></div>
     </section>
 
     <section class="card">
       <h2><i class="bi bi-person-plus me-1"></i>Add a contact</h2>
       <div class="row g-2">
+        <div class="col-12">
+          <div class="avatar-picker mb-2">
+            <div id="newContactAvatarWrap" class="avatar-wrap avatar-wrap-editable" onclick="triggerNewContactProfilePic()"></div>
+            <div class="avatar-hint">Click photo<br>to add</div>
+            <input type="file" id="newContactProfilePicFile" accept="image/*" style="display:none;" onchange="handleNewContactProfilePic(this)">
+          </div>
+        </div>
         <div class="col-12 col-sm-6">
           <input type="text" id="contactFirstName" class="form-control mb-2" placeholder="First name">
         </div>
@@ -78,5 +86,10 @@
   </main>
 
   <script src="js/code.js"></script>
+  <script>
+    // Fill the Add Contact avatar with the default silhouette once code.js
+    // (and its avatarImg()/DEFAULT_PROFILE_PIC) has loaded.
+    document.getElementById("newContactAvatarWrap").innerHTML = avatarImg("");
+  </script>
 </body>
 </html>
