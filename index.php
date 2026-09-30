@@ -9,6 +9,9 @@ POST
 - [no action] = login
 - ?action=register
 - ?action=contactAdd
+- ?action=contactPhotoUpload (multipart/form-data; field "photo", optional
+  "contactId" - saves the file under /img and returns its filename to store
+  as ProfilePic)
 GET
 - ?action=contactSearch
 - ?action=userSearch
