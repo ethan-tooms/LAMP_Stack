@@ -76,7 +76,7 @@ function executePostCall($action, $db, $userId)
                 ':firstName' => clean($body['firstName']),
                 ':lastName' => clean($body['lastName']),
                 ':nickname' => clean($body['nickname']),
-                ':phone' => clean($body['phone']),
+                ':phone' => $formattedPhone,
                 ':email' => clean($body['email']),
                 ':address' => clean($body['address']),
                 ':profilePic' =>
