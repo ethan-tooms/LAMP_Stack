@@ -57,6 +57,21 @@ function executePostCall($action, $db, $userId)
                 respond(404, ['error' => 'Invalid email format']);
                 exit;
             }
+            // Check and normalize number format in DB
+            $digitsOnly = preg_replace('/\D/', '', $phone);
+
+            if (strlen($digitsOnly) !== 10) {
+                respond(422, ['error' => 'Invalid phone number, please use 10 digits']);
+                exit;
+            }
+
+            // Format as (305) 555 1234
+            $formattedPhone = sprintf(
+                '%s-%s-%s',
+                substr($digitsOnly, 0, 3),
+                substr($digitsOnly, 3, 3),
+                substr($digitsOnly, 6, 4)
+            );
             $stmt->execute([
                 ':firstName' => clean($body['firstName']),
                 ':lastName' => clean($body['lastName']),
