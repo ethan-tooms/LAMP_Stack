@@ -58,7 +58,7 @@ function executePostCall($action, $db, $userId)
                 exit;
             }
             // Check and normalize number format in DB
-            $digitsOnly = preg_replace('/\D/', '', clean(body['phone']));
+            $digitsOnly = preg_replace('/\D/', '', clean($body['phone']));
 
             if (strlen($digitsOnly) !== 10) {
                 respond(422, ['error' => 'Invalid phone number, please use 10 digits']);
