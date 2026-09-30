@@ -53,7 +53,9 @@ function executePostCall($action, $db, $userId)
                     :uid
                 )
             ");
-
+            if (!filter_var((clean($body['email'])), FILTER_VALIDATE_EMAIL)){
+                respond(404, ['error' => 'Invalid email format']);
+            }
             $stmt->execute([
                 ':firstName' => clean($body['firstName']),
                 ':lastName' => clean($body['lastName']),
